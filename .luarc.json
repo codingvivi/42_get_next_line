@@ -1,0 +1,16 @@
+{
+  "hint.enable": true,
+  "workspace.checkThirdParty": "Apply",
+  "workspace.userThirdParty": [
+        "/home/musicvivireal/.local/share/lua-language-server/addons/"
+    ],
+  "workspace.library": [ 
+        "/home/musicvivireal/.local/share/lua-language-server/addons/lua-d-premake5/library",
+        "/home/musicvivireal/.local/share/lua-language-server/addons//lua-d-premake5/library"
+      ] ,
+      
+"diagnostics.disable": [
+        "undefined-global" 
+  ],
+
+}

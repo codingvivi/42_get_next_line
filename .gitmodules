@@ -1,0 +1,3 @@
+[submodule "tests/external/gnl-unit-test"]
+	path = tests/external/gnl-unit-test
+	url = https://github.com/harm-smits/gnl-unit-test.git
