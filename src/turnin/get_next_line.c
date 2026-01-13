@@ -6,14 +6,12 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/01/12 22:47:34 by lrain            ###   ########.fr       */
+/*   Updated: 2026/01/13 21:13:04 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
+#import <get_next_line.h>
 
-int	main(void)
+char	*get_next_line(int fd)
 {
-	printf("Hello World");
-	return (0);
 }
