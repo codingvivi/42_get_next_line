@@ -1,0 +1,144 @@
+
+---
+InheritParentConfig: true
+
+Checks: >
+  readability-function-size,
+  readability-identifier-naming,
+  cppcoreguidelines-avoid-non-const-global-variables
+
+  
+
+CheckOptions:
+  # --- GLOBAL VARIABLE RESTRICTIONS ---
+  - key:             cppcoreguidelines-avoid-non-const-global-variables.AllowInternalLinkage
+    value:           'false'
+  
+  # For this project: effectively ban 'const' globals by requiring an impossible naming convention
+  - key:             readability-identifier-naming.GlobalConstantPrefix
+    value:           'FORBIDDEN_GLOBAL_'
+  - key:             readability-identifier-naming.GlobalConstantCase
+    value:           'lower_case'
+
+  # --- FUNCTION MAGNITUDE LIMITS ---
+  - key:             readability-function-size.LineThreshold
+    value:           '25'
+  - key:             readability-function-size.ParameterThreshold
+    value:           '4'
+  - key:             readability-function-size.VariableThreshold
+    value:           '5'
+
+  # --- UNIFORM NAMING CONVENTION (lower_case) ---
+  - key:             readability-identifier-naming.AbstractClassCase
+    value:           lower_case
+  - key:             readability-identifier-naming.ClassCase
+    value:           lower_case
+  - key:             readability-identifier-naming.ClassConstantCase
+    value:           lower_case
+  - key:             readability-identifier-naming.ClassMemberCase
+    value:           lower_case
+  - key:             readability-identifier-naming.ClassMethodCase
+    value:           lower_case
+  - key:             readability-identifier-naming.ConceptCase
+    value:           lower_case
+  - key:             readability-identifier-naming.ConstantCase
+    value:           lower_case
+  - key:             readability-identifier-naming.ConstantMemberCase
+    value:           lower_case
+  - key:             readability-identifier-naming.ConstantParameterCase
+    value:           lower_case
+  - key:             readability-identifier-naming.ConstantPointerParameterCase
+    value:           lower_case
+  - key:             readability-identifier-naming.ConstexprFunctionCase
+    value:           lower_case
+  - key:             readability-identifier-naming.ConstexprMethodCase
+    value:           lower_case
+  - key:             readability-identifier-naming.ConstexprVariableCase
+    value:           lower_case
+  - key:             readability-identifier-naming.EnumCase
+    value:           lower_case
+  - key:             readability-identifier-naming.EnumConstantCase
+    value:           lower_case
+  - key:             readability-identifier-naming.FunctionCase
+    value:           lower_case
+  - key:             readability-identifier-naming.GlobalConstantCase
+    value:           lower_case
+  - key:             readability-identifier-naming.GlobalConstantPointerCase
+    value:           lower_case
+  - key:             readability-identifier-naming.GlobalFunctionCase
+    value:           lower_case
+  - key:             readability-identifier-naming.GlobalPointerCase
+    value:           lower_case
+  - key:             readability-identifier-naming.GlobalVariableCase
+    value:           lower_case
+  - key:             readability-identifier-naming.InlineNamespaceCase
+    value:           lower_case
+  - key:             readability-identifier-naming.LocalConstantCase
+    value:           lower_case
+  - key:             readability-identifier-naming.LocalConstantPointerCase
+    value:           lower_case
+  - key:             readability-identifier-naming.LocalPointerCase
+    value:           lower_case
+  - key:             readability-identifier-naming.LocalVariableCase
+    value:           lower_case
+  - key:             readability-identifier-naming.MacroDefinitionCase
+    value:           lower_case
+  - key:             readability-identifier-naming.MemberCase
+    value:           lower_case
+  - key:             readability-identifier-naming.MethodCase
+    value:           lower_case
+  - key:             readability-identifier-naming.NamespaceCase
+    value:           lower_case
+  - key:             readability-identifier-naming.ParameterCase
+    value:           lower_case
+  - key:             readability-identifier-naming.ParameterPackCase
+    value:           lower_case
+  - key:             readability-identifier-naming.PointerParameterCase
+    value:           lower_case
+  - key:             readability-identifier-naming.PrivateMemberCase
+    value:           lower_case
+  - key:             readability-identifier-naming.PrivateMethodCase
+    value:           lower_case
+  - key:             readability-identifier-naming.ProtectedMemberCase
+    value:           lower_case
+  - key:             readability-identifier-naming.ProtectedMethodCase
+    value:           lower_case
+  - key:             readability-identifier-naming.PublicMemberCase
+    value:           lower_case
+  - key:             readability-identifier-naming.PublicMethodCase
+    value:           lower_case
+  - key:             readability-identifier-naming.ScopedEnumConstantCase
+    value:           lower_case
+  - key:             readability-identifier-naming.StaticConstantCase
+    value:           lower_case
+  - key:             readability-identifier-naming.StaticVariableCase
+    value:           lower_case
+  - key:             readability-identifier-naming.StructCase
+    value:           lower_case
+  - key:             readability-identifier-naming.TemplateParameterCase
+    value:           lower_case
+  - key:             readability-identifier-naming.TemplateTemplateParameterCase
+    value:           lower_case
+  - key:             readability-identifier-naming.TypeAliasCase
+    value:           lower_case
+  - key:             readability-identifier-naming.TypedefCase
+    value:           lower_case
+  - key:             readability-identifier-naming.TypeTemplateParameterCase
+    value:           lower_case
+  - key:             readability-identifier-naming.UnionCase
+    value:           lower_case
+  - key:             readability-identifier-naming.ValueTemplateParameterCase
+    value:           lower_case
+  - key:             readability-identifier-naming.VariableCase
+    value:           lower_case
+  - key:             readability-identifier-naming.VirtualMethodCase,
+    value: lower_case
+
+  # --- PREFIXES & SUFFIXES ---
+  - {key: readability-identifier-naming.EnumPrefix, value: 'e_'}
+  - {key: readability-identifier-naming.EnumConstantPrefix, value: 'e_'}
+  - {key: readability-identifier-naming.GlobalVariablePrefix, value: 'g_'}
+  - {key: readability-identifier-naming.StructPrefix, value: 's_'}
+  - {key: readability-identifier-naming.TypedefPrefix, value: 't_'}
+  - {key: readability-identifier-naming.UnionPrefix, value: 'u_'}
+...

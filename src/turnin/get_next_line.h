@@ -1,22 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/12 16:44:30 by lrain             #+#    #+#             */
-/*   Updated: 2026/01/13 05:29:37 by lrain            ###   ########.fr       */
+/*   Created: 2026/01/11 23:12:23 by lrain             #+#    #+#             */
+/*   Updated: 2026/01/11 23:14:21 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
-#include "get_next_line.h"
-#include <fcntl.h>
+#define GNL_ERR 1
+#define GNL_EOF 2
+#define GNL_FOUND 4
 
-int main(int argc, char **argv) {
-  const int fd = open("resources/Bee Movie Script.txt", O_RDONLY);
-
-  int a = 1;
-  return (0);
-}
+char	*get_next_line(int fd);

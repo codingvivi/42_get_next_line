@@ -1,3 +1,6 @@
 [submodule "tests/external/gnl-unit-test"]
-	path = tests/external/gnl-unit-test
+	path = external/tests/gnl-unit-test
 	url = https://github.com/harm-smits/gnl-unit-test.git
+[submodule "premake-ecc"]
+	path = external/build
+	url = https://github.com/MattBystrin/premake-ecc.git

@@ -1,0 +1,34 @@
+Checks: >
+  -*,
+  bugprone-*,
+  cert-*,
+  clang-analyzer-*,
+  misc-*,
+  readability-*,
+
+  -bugprone-narrowing-conversions,
+  -readability-braces-around-statements,
+  -readability-function-size,
+  -readability-magic-numbers,
+  -readability-uppercase-literal-suffix,
+  -readability-identifier-length
+  WarningsAsErrors: '*'
+
+  cppcoreguidelines-avoid-non-const-global-variables,
+  bugprone-assignment-in-if-condition,
+  readability-function-size,
+  readability-indentifier-naming,
+
+WarningsAsErrors: '*'
+
+CheckOptions:
+  - key:             readability-function-cognitive-complexity.Threshold
+    value:           '20'
+  
+  - key:             readability-identifier-naming.FunctionCase
+    value:           snake_case
+  - key:             readability-identifier-naming.VariableCase
+    value:           snake_case
+  - key:             readability-identifier-naming.StructCase
+    value:           CamelCase
+

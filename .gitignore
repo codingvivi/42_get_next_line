@@ -1,0 +1,10 @@
+# auto genned
+.cache/
+bin/
+build/
+compile_commands.json
+Makefile
+*.make
+
+# just my reference
+reference
