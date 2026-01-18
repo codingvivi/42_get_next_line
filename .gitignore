@@ -7,4 +7,5 @@ Makefile
 *.make
 
 # just my reference
-reference
+reference/*
+!reference/musl-getdelim-commented.c
