@@ -6,15 +6,15 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/15 19:22:26 by lrain             #+#    #+#             */
-/*   Updated: 2026/01/18 20:35:41 by lrain            ###   ########.fr       */
+/*   Updated: 2026/01/19 11:56:31 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include <stddef.h>
 
-char *gnl_strchrnul(const char *str, int c) {
-  const char *end = str;
+unsigned char *gnl_strchrnul(const unsigned char *str, int c) {
+  const unsigned char *end = str;
   size_t len;
   while (*end)
     end++;
@@ -22,8 +22,10 @@ char *gnl_strchrnul(const char *str, int c) {
 
   c = (unsigned char)c;
   if (!c)
-    return ((char *)str + len);
+    return ((unsigned char *)str + len);
   while (*str && *(unsigned char *)str != c)
     str++;
-  return ((char *)str);
+  return ((unsigned char *)str);
 }
+
+void fastcopy();

@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/11 23:12:23 by lrain             #+#    #+#             */
-/*   Updated: 2026/01/18 20:32:01 by lrain            ###   ########.fr       */
+/*   Updated: 2026/01/19 17:40:15 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,11 @@
 #define BUFFER_SIZE BUFSIZ
 #endif
 
-#ifndef READSIZE_INIT
+#ifndef MEMSIZE_INIT
 #if BUFFER_SIZE > BUFSIZ
-#define READSSIZE_INIT BUFFER_SIZE
+#define MEMSIZE_INIT BUFFER_SIZE
 #else
-#define READSSIZE_INIT BUFSIZ
+#define MEMSIZE_INIT BUFSIZ
 #endif
 #endif
 
@@ -33,9 +33,10 @@
 typedef struct s_gnl_buf {
   int flags;
   size_t len;
-  size_t capacity;
-  char *rpos;
-  char *buf;
+  size_t bufcap;
+  unsigned char *delim;
+  unsigned char *rpos;
+  unsigned char *buf;
 } t_gnl_buf;
 
 char *get_next_line(int fd);

@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:28:37 by lrain             #+#    #+#             */
-/*   Updated: 2026/01/18 20:35:45 by lrain            ###   ########.fr       */
+/*   Updated: 2026/01/19 17:30:43 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,15 +36,15 @@ ssize_t getdelim(char **restrict strt_out, size_t *restrict capout, int delim,
     return -1;
   }
 
-  // if contents of output null null term
+  // if contents of output null ptr
   // set output capacity to 0
   if (!*strt_out)
     *capout = 0;
 
   // endlessly
-  // doesnt check conditionn every single bite
+  // doesnt check conditionn every single byte
   for (;;) {
-    // if were not at end of file yet
+    // if we're not at end of file yet
     if (f->rpos != f->rend) {
       // get ptr to delim
       // or null if not found i think
