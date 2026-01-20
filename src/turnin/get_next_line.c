@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/01/19 18:14:42 by lrain            ###   ########.fr       */
+/*   Updated: 2026/01/20 21:26:42 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void *ft_memcpy(void *dest, const void *src, size_t count);
 
 char *get_next_line(int fd) {
   static t_gnl_buf stream;
-  char *tmp;
+  char *out;
   size_t newcap;
   size_t copylen;
   ssize_t read_result;
@@ -36,33 +36,18 @@ char *get_next_line(int fd) {
     return NULL;
   if (!stream.bufcap) {
     stream = (t_gnl_buf){.bufcap = MEMSIZE_INIT,
-                         .buf = malloc((stream.bufcap + 1) * sizeof(char))};
+                         .buf = malloc((MEMSIZE_INIT + 1) * sizeof(char))};
   }
-  // while (1) {
-  // }
-  // if (!stream.buf)
-  //   return NULL;
-
+  if (!stream.buf)
+    return NULL;
   read_result = read(fd, stream.buf, BUFFER_SIZE);
-  // if (read_result == READ_EOF || read_result == READ_ERR)
-  //   return NULL;
-  // stream = (t_gnl_buf){.rpos = stream.buf};
-  // stream.delim = gnl_strchrnul(stream.buf, '\n');
-  // copylen = stream.delim - stream.rpos;
-  // // increase if needed
-  // if (stream.len + copylen >= stream.bufcap) {
-  //   newcap = stream.len + copylen + 2;
-  //   while ((stream.len + copylen) > newcap && newcap < SIZE_MAX / 4)
-  //     newcap += newcap / 2;
-  //   tmp = malloc(newcap * sizeof(char));
-  //   if (!tmp) {
-  //     newcap = stream.len + copylen + 2;
-  //     tmp = malloc(newcap * sizeof(char));
-  //     if (!tmp)
-  //       return NULL;
-  //   }
-  // }
-  // return (char *)stream.buf;
+  if (read_result == READ_EOF || read_result == READ_ERR)
+    return NULL;
+  read_result = (size_t)read_result;
+  stream.buf[read_result] = '\0';
+  out = malloc(((size_t)read_result + 1) * sizeof(char));
+  ft_memcpy(out, (const char *)stream.buf, (size_t)read_result + 1);
+  return out;
 }
 /*
 char *get_next_line(int fd) {

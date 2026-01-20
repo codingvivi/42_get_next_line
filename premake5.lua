@@ -1,14 +1,17 @@
-require "external/premake-ecc/ecc"
+require "external/build/premake-ecc/ecc"
 
 workspace "GNL_Workspace"
     configurations { "Debug", "Release" }
     platforms { "Dev", "42" }
     toolset "clang"
+    filter "configurations:Debug"
+        buildoptions {"-g", "-Wall", "-Wextra"}
+
+    filter "configurations:Release"
+        buildoptions {"-Wall", "-Werror", "-Wextra"}
 
     -- concat path with premake action run (gmake)
-    location ("build/" .. _ACTION)
-
-    buildoptions {"-Wall", "-Werror", "-Wextra"}
+    --location ("../build/" .. _ACTION)
 
     filter "platforms:Dev"
         architecture "ARM64"
@@ -20,14 +23,11 @@ workspace "GNL_Workspace"
         buildoptions { "--target=x86_64-linux-gnu" }
         linkoptions { "--target=x86_64-linux-gnu", "-fuse-ld=lld" }
 
-    filter {}
-
 project "get_next_line"
     kind "StaticLib"
     language "C"
     targetdir "bin/%{cfg.platform}/%{cfg.buildcfg}"
     objdir "build/%{cfg.platform}/%{cfg.buildcfg}"
-
     -- Update paths to the new subdirectory
     files {
         "src/turnin/get_next_line.c",
