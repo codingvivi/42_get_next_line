@@ -6,26 +6,30 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/15 19:22:26 by lrain             #+#    #+#             */
-/*   Updated: 2026/01/20 21:26:49 by lrain            ###   ########.fr       */
+/*   Updated: 2026/01/21 21:16:27 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
+#include "get_next_line.h"
 #include <stddef.h>
+#include <stdint.h>
+#include <unistd.h>
 
-unsigned char *gnl_strchrnul(const unsigned char *str, int c) {
-  const unsigned char *end = str;
-  size_t len;
-  while (*end)
-    end++;
-  len = end - str;
+void *ft_memchr(const void *src, int c, size_t count) {
+  void *out;
+  const unsigned char *s = src;
 
   c = (unsigned char)c;
-  if (!c)
-    return ((unsigned char *)str + len);
-  while (*str && *(unsigned char *)str != c)
-    str++;
-  return ((unsigned char *)str);
+  while (count && (*s != c)) {
+    s++;
+    count--;
+  }
+  if (count)
+    out = ((void *)s);
+  else
+    out = NULL;
+  return out;
 }
 
 void *ft_memcpy(void *dest, const void *src, size_t count) {
@@ -39,3 +43,17 @@ void *ft_memcpy(void *dest, const void *src, size_t count) {
     *d++ = *s++;
   return (dest);
 }
+
+/* char *gnl_setcap(t_gnl_buf stream, t_gnl_currop curr) {
+  unsigned char *tmp;
+  if (!curr.delim && curr.newcap < SIZE_MAX / 4) {
+  }
+}
+
+int gnl_read(t_gnl_buf stream, const int fd) {
+  if () {
+  }
+  stream.read_len = read(fd, stream.buf, BUFFER_SIZE);
+  if (stream.read_len == READ_ERR)
+    return -1;
+} */

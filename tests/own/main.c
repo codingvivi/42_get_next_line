@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 16:44:30 by lrain             #+#    #+#             */
-/*   Updated: 2026/01/20 21:31:19 by lrain            ###   ########.fr       */
+/*   Updated: 2026/01/21 14:07:12 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <stdio.h>
 
 int main(int argc, char **argv) {
-  const char *default_path = "tests/own/resources/Bee Movie Script.txt";
+  const char *default_path = "tests/resources/external/Bee Movie Script.txt";
   const char *path;
 
   if (argc != 2) {
@@ -32,8 +32,9 @@ int main(int argc, char **argv) {
   for (int i = 0; i < 2; i++) {
     char *line = get_next_line(fd_test);
     assert(line);
-    printf("%s", line);
+    printf("%s\n", line);
   }
 
+  printf("\n\nBuffer size:%d\nMemory size: %d", BUFFER_SIZE, MEMSIZE_INIT);
   return (0);
 }

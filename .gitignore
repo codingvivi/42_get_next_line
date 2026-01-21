@@ -8,4 +8,5 @@ Makefile
 
 # just my reference
 reference/*
+!reference/musl-getdelim.c
 !reference/musl-getdelim-commented.c
