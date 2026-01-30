@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/15 19:22:26 by lrain             #+#    #+#             */
-/*   Updated: 2026/01/26 22:03:39 by lrain            ###   ########.fr       */
+/*   Updated: 2026/01/30 17:56:28 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,34 +20,6 @@
 #define READ_ERR -1
 #define READ_NONE_READ 0
 #define READ_EOF READ_NONE_READ
-
-void *ft_memchr(const void *src, int c, size_t count) {
-  void *out;
-  const unsigned char *s = src;
-
-  c = (unsigned char)c;
-  while (count && (*s != c)) {
-    s++;
-    count--;
-  }
-  if (count)
-    out = ((void *)s);
-  else
-    out = NULL;
-  return out;
-}
-
-void *ft_memcpy(void *dest, const void *src, size_t count) {
-  unsigned char *d;
-  const unsigned char *s = src;
-
-  if (!dest && !src && count)
-    return (NULL);
-  d = dest;
-  while (count--)
-    *d++ = *s++;
-  return (dest);
-}
 
 t_rflags gnl_read(unsigned char **buf, int fd, const unsigned char **r_pos,
                   const unsigned char **r_end) {
@@ -64,6 +36,33 @@ t_rflags gnl_read(unsigned char **buf, int fd, const unsigned char **r_pos,
     out = e_r_eof;
   else
     out = e_r_normal;
+  return out;
+}
+
+/* truly deranged */
+void *mem_chr_or_cpy(const void *src, void *dest_cpy, size_t count, int c_chr) {
+  unsigned char *d;
+  void *out;
+  const unsigned char *s = src;
+
+  if (dest_cpy == DO_MEMCHR) {
+    c_chr = (unsigned char)c_chr;
+    while (count && (*s != c_chr)) {
+      s++;
+      count--;
+    }
+    if (count)
+      out = ((void *)s);
+    else
+      out = NULL;
+  } else {
+    out = dest_cpy;
+    if (!dest_cpy && !src && count)
+      return (NULL);
+    d = dest_cpy;
+    while (count--)
+      *d++ = *s++;
+  }
   return out;
 }
 

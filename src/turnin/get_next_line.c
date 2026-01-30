@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/01/30 16:47:39 by lrain            ###   ########.fr       */
+/*   Updated: 2026/01/30 17:55:08 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,44 +18,46 @@
 
 void *ft_memchr(const void *src, int c, size_t count);
 void *ft_memcpy(void *dest, const void *src, size_t count);
+void *mem_chr_or_cpy(const void *src, void *dest_cpy, size_t count, int c_chr);
 t_rflags gnl_read(unsigned char **buf, int fd, const unsigned char **r_pos,
                   const unsigned char **r_end);
 
 char *get_next_line(int fd) {
-  static t_gnl_buf stream;
+  static t_gnl_buf strm;
   t_gnl_currop curr;
   t_rflags read_result;
 
-  if (!stream.cap) {
-    stream = (t_gnl_buf){.cap = MEMSIZE_INIT,
-                         .buf = malloc((MEMSIZE_INIT + 1) * sizeof(char))};
-    if (!stream.buf)
+  if (!strm.cap) {
+    strm = (t_gnl_buf){.cap = MEMSIZE_INIT,
+                       .buf = malloc((MEMSIZE_INIT + 1) * sizeof(char))};
+    if (!strm.buf)
       return NULL;
   }
-  if (stream.read_pos == stream.read_end) {
+  if (strm.read_pos == strm.read_end) {
     read_result =
-        gnl_read(&stream.buf, fd, (const unsigned char **)&stream.read_pos,
-                 (const unsigned char **)&stream.read_end);
+        gnl_read(&strm.buf, fd, (const unsigned char **)&strm.read_pos,
+                 (const unsigned char **)&strm.read_end);
     if (read_result == e_r_err)
       return 0;
-    stream.flags |= read_result;
+    strm.flags |= read_result;
   }
-  stream.read_len = stream.read_end - stream.read_pos;
-  curr.delim = ft_memchr(stream.read_pos, '\n', stream.read_len);
+  strm.read_len = strm.read_end - strm.read_pos;
+  curr.delim = mem_chr_or_cpy(strm.read_pos, DO_MEMCHR, strm.read_len, '\n');
   if (curr.delim)
-    curr.copy_len = curr.delim - stream.read_pos + 1;
+    curr.copy_len = curr.delim - strm.read_pos + 1;
   else
-    curr.copy_len = stream.read_len;
+    curr.copy_len = strm.read_len;
   curr.outbuf = malloc((curr.copy_len + 1 + 1) * sizeof(char));
   if (!curr.outbuf) {
-    free(stream.buf);
-    stream.buf = NULL;
+    free(strm.buf);
+    strm.buf = NULL;
     return NULL;
   }
 
-  ft_memcpy(curr.outbuf, (const char *)stream.read_pos, curr.copy_len);
+  mem_chr_or_cpy((const char *)strm.read_pos, curr.outbuf, curr.copy_len,
+                 NO_SEEK);
   curr.outbuf[curr.copy_len] = 0;
-  stream.read_pos += curr.copy_len;
+  strm.read_pos += curr.copy_len;
   return curr.outbuf;
 }
 /*
