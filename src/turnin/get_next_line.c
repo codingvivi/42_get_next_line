@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/01/28 10:51:33 by lrain            ###   ########.fr       */
+/*   Updated: 2026/01/30 16:47:39 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ char *get_next_line(int fd) {
   stream.read_len = stream.read_end - stream.read_pos;
   curr.delim = ft_memchr(stream.read_pos, '\n', stream.read_len);
   if (curr.delim)
-    curr.copy_len = curr.delim - stream.read_pos;
+    curr.copy_len = curr.delim - stream.read_pos + 1;
   else
     curr.copy_len = stream.read_len;
   curr.outbuf = malloc((curr.copy_len + 1 + 1) * sizeof(char));
