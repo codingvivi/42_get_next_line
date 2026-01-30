@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 16:44:30 by lrain             #+#    #+#             */
-/*   Updated: 2026/01/21 14:07:12 by lrain            ###   ########.fr       */
+/*   Updated: 2026/01/26 21:22:48 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,12 @@ int main(int argc, char **argv) {
   // printf("Ouggh ");
   const int fd_test = open(path, O_RDONLY);
   assert(fd_test != -1);
-  for (int i = 0; i < 2; i++) {
+  for (int i = 0; i < 10; i++) {
     char *line = get_next_line(fd_test);
     assert(line);
-    printf("%s\n", line);
+    printf("%s", line);
   }
-
-  printf("\n\nBuffer size:%d\nMemory size: %d", BUFFER_SIZE, MEMSIZE_INIT);
+  printf("<<<END OF PRINT>>>\n\n");
+  printf("Buffer size:%d\nMemory size: %d", BUFFER_SIZE, MEMSIZE_INIT);
   return (0);
 }

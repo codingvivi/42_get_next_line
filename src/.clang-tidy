@@ -15,10 +15,10 @@ CheckOptions:
     value:           'false'
   
   # For this project: effectively ban 'const' globals by requiring an impossible naming convention
-  - key:             readability-identifier-naming.GlobalConstantPrefix
-    value:           'FORBIDDEN_GLOBAL_'
-  - key:             readability-identifier-naming.GlobalConstantCase
-    value:           'lower_case'
+  # - key:             readability-identifier-naming.GlobalConstantPrefix
+  #  value:           'FORBIDDEN_GLOBAL_'
+  #- key:             readability-identifier-naming.GlobalConstantCase
+  #  value:           'lower_case'
 
   # --- FUNCTION MAGNITUDE LIMITS ---
   - key:             readability-function-size.LineThreshold

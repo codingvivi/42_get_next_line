@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/11 23:12:23 by lrain             #+#    #+#             */
-/*   Updated: 2026/01/21 21:07:21 by lrain            ###   ########.fr       */
+/*   Updated: 2026/01/26 22:03:39 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,19 +27,16 @@
 #endif
 
 // wanted to do an enum, but no global vars allowed...
-#ifndef READ_ERR
-#define READ_ERR -1
-#endif
-
-#ifndef READ_NONEREAD
-#define READ_NONE_READ 0
-#endif
 
 #ifndef STREAM_EOF
 #define STREAM_EOF 1
 #endif
 
-/* enum e_buf_flags { gnl_eof = 1} */
+typedef enum e_rflags {
+  e_r_err = -1,
+  e_r_normal = 0,
+  e_r_eof = STREAM_EOF,
+} t_rflags;
 
 typedef struct s_gnl_buf {
   int flags;
@@ -47,7 +44,8 @@ typedef struct s_gnl_buf {
   size_t cap;
   unsigned char *delim;
   unsigned char *buf;
-  ssize_t read_len;
+  ssize_t read_len_init;
+  size_t read_len;
   unsigned char *read_pos;
   unsigned char *read_end;
 } t_gnl_buf;
