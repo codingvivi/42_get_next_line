@@ -1,0 +1,71 @@
+start: GNL call { shape: oval }
+
+end: Return String { shape: oval }
+
+# abort: Return NULL { shape: oval }
+
+
+copylen: length to copy {
+  delim: Seek delim {
+    buf?: Buffer left to seek? { shape: diamond }
+
+    read : Read operations{  
+      read: Read from file descriptor
+   
+      mem: Ensure space for read {
+        expand: {
+          freeold: free main buffer
+          malloc
+        }
+      }
+    }
+
+    seek: Seek delimiter{ shape: rectangle }
+  }
+
+  calc: Calculate length to copy
+}
+
+
+start -> copylen.delim.buf?
+
+copylen.delim.buf? -> copylen.delim.seek: yes
+copylen.delim.buf? -> copylen.delim.read.mem.enough?: no
+
+copylen.delim.read.mem.enough? -> copylen.delim.read.read: yes
+copylen.delim.read.read -> copylen.delim.seek
+
+copylen.delim.read.mem.enough? -> copylen.delim.read.mem.expand.freeold -> copylen.delim.read.mem.expand.malloc -> copylen.delim.read.read
+
+copylen.delim.seek -> copylen.calc  
+
+outcopy: copy to output buffer {
+    mem?: Is copy length smaller then capacity left? {shape: diamond}
+    copy
+    realloc: grow geometrically  
+}
+
+delimOrEOF?: is last output buffer char the delimiter, or did we reach EOF during read?
+
+copylen.calc -> outcopy.mem?
+
+outcopy.mem? -> outcopy.copy: yes
+outcopy.mem? -> outcopy.realloc: no
+outcopy.realloc -> outcopy.copy -> delimOrEOF?
+
+exit: exit routine {
+  unusedMem?: check for unused memory {shape:diamond}
+  realloc: move to smaller buffer
+  free: free old, too large buffer
+  break  
+}
+
+delimOrEOF? -> exit.unusedMem?: yes 
+
+exit.unusedMem? -> exit.realloc: yes
+exit.realloc -> exit.free -> exit.break 
+
+exit.unusedMem? -> exit.break: no
+
+exit.break -> end
+delimOrEOF? -> copylen.delim.buf?: no
