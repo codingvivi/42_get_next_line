@@ -6,74 +6,88 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/01/30 18:03:02 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/03 15:01:48 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #import "get_next_line.h"
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-void *ft_memchr(const void *src, int c, size_t count);
-void *ft_memcpy(void *dest, const void *src, size_t count);
-void *mem_chr_or_cpy(const void *src, void *dest_cpy, size_t count, int c_chr);
-t_rflags gnl_read(unsigned char **buf, int fd, const unsigned char **r_pos,
-                  const unsigned char **r_end);
+void free_all(t_to_free *tgts);
+int gnl_init_vars(t_gnl_currop *cp, t_gnl_buf *sp);
+int gnl_read(int fd, t_gnl_buf *sp);
+void *gnl_memchr(int c, const void *src, size_t count);
+int find_and_copy(t_gnl_buf *sp, t_gnl_currop *cp);
+int ensure_space(t_gnl_currop **cpp, t_gnl_buf **spp);
 
 char *get_next_line(int fd) {
   static t_gnl_buf strm;
-  t_gnl_currop curr;
-  t_rflags read_result;
+  t_to_free items2f = (t_to_free){};
+  t_gnl_currop curr = (t_gnl_currop){
+      .outbuf = malloc((BUFFER_SIZE + 1) * sizeof(char)),
+      .cap = BUFFER_SIZE,
+  };
 
-  if (!strm.cap) {
-    strm = (t_gnl_buf){.cap = MEMSIZE_INIT,
-                       .buf = malloc((MEMSIZE_INIT + 1) * sizeof(char))};
+  if (!curr.outbuf)
+    return NULL;
+  items2f.ptrs[items2f.num++] = curr.outbuf;
+  if (!strm.buf) {
+    strm.buf = malloc((BUFSIZ + 1) * sizeof(char));
     if (!strm.buf)
-      return NULL;
-  }
-  if (strm.read_pos == strm.read_end) {
-    read_result =
-        gnl_read(&strm.buf, fd, (const unsigned char **)&strm.read_pos,
-                 (const unsigned char **)&strm.read_end);
-    if (read_result == e_r_err)
-      return 0;
-    strm.flags |= read_result;
-  }
-  strm.read_len = strm.read_end - strm.read_pos;
-  curr.delim = mem_chr_or_cpy(strm.read_pos, DO_MEMCHR, strm.read_len, '\n');
-  if (curr.delim)
-    curr.copy_len = curr.delim - strm.read_pos + 1;
-  else
-    curr.copy_len = strm.read_len;
-  curr.outbuf = malloc((curr.copy_len + 1 + 1) * sizeof(char));
-  if (!curr.outbuf) {
-    free(strm.buf);
-    strm.buf = NULL;
+      free_all(&items2f);
     return NULL;
   }
-
-  mem_chr_or_cpy((const char *)strm.read_pos, curr.outbuf, curr.copy_len,
-                 NO_SEEK);
-  curr.outbuf[curr.copy_len] = 0;
-  strm.read_pos += curr.copy_len;
-  return curr.outbuf;
-}
-/*
-char *get_next_line(int fd) {
-
-  static t_gnl_buf stream;
-  unsigned char *delim;
-  char *temp;
-  if (!stream.len) {
-    stream = (t_gnl_buf){.capacity = rev_clamp(BUFSIZ, BUFFER_SIZE),
-                         .buf = malloc((stream.capacity + 1) * sizeof(char))};
+  items2f.ptrs[items2f.num++] = strm.buf;
+  while (1) {
+    if (strm.rd_pos == strm.rd_end) {
+      if (gnl_read(fd, &strm)) {
+        free_all(&items2f);
+        return NULL;
+      }
+    }
+    if (find_and_copy(&strm, &curr)) {
+      free_all(&items2f);
+      return NULL;
+    };
   }
-  if (!stream.buf)
-    read(fd, stream.buf, BUFFER_SIZE);
-  if (!stream.buf) {
-  }
-  return NULL;
 }
-*/
+
+int gnl_read(int fd, t_gnl_buf *sp) {
+  ssize_t read_result;
+
+  read_result = read(fd, sp->buf, BUFFER_SIZE);
+  if (read_result < e_r_normal_bounds)
+    return 1;
+  if (read_result != BUFFER_SIZE)
+    sp->flags |= e_r_eof;
+  sp->rd_pos = sp->buf;
+  sp->rd_len = (size_t)read_result;
+  sp->rd_end = sp->rd_pos + sp->rd_len;
+  return 0;
+}
+
+int find_and_copy(t_gnl_buf *sp, t_gnl_currop *cp) {
+
+  cp->delim = gnl_memchr('\n', sp->buf, sp->rd_len);
+  if (cp->delim)
+    cp->copy_len = cp->delim - sp->rd_pos + 1;
+  else
+    cp->copy_len = sp->rd_len;
+  if (ensure_space(&cp, &sp))
+    return 1;
+  return 0;
+}
+
+int ensure_space(t_gnl_currop **cpp, t_gnl_buf **spp) {
+
+  t_gnl_currop *cp = **cpp;
+  t_gnl_buf *sp = **spp;
+
+  if (cp->cap - cp->len < cp->copy_len + 1) {
+  }
+  return 0;
+}
