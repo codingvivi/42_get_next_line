@@ -6,22 +6,26 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/03 15:01:48 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/03 20:33:58 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #import "get_next_line.h"
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 void free_all(t_to_free *tgts);
+void *scuffed_realloc(size_t old_size, void *ptr, size_t new_size);
 int gnl_init_vars(t_gnl_currop *cp, t_gnl_buf *sp);
 int gnl_read(int fd, t_gnl_buf *sp);
 void *gnl_memchr(int c, const void *src, size_t count);
 int find_and_copy(t_gnl_buf *sp, t_gnl_currop *cp);
+void *ft_memcpy(void *dest, const void *src, size_t count);
 int ensure_space(t_gnl_currop **cpp, t_gnl_buf **spp);
 
 char *get_next_line(int fd) {
@@ -53,7 +57,9 @@ char *get_next_line(int fd) {
       free_all(&items2f);
       return NULL;
     };
+    curr.outbuf[curr.copy_len] = 0;
   }
+  return ((char *)curr.outbuf);
 }
 
 int gnl_read(int fd, t_gnl_buf *sp) {
@@ -71,23 +77,29 @@ int gnl_read(int fd, t_gnl_buf *sp) {
 }
 
 int find_and_copy(t_gnl_buf *sp, t_gnl_currop *cp) {
+  const size_t needed = cp->copy_len + 1;
+  unsigned char *tmp;
 
   cp->delim = gnl_memchr('\n', sp->buf, sp->rd_len);
   if (cp->delim)
     cp->copy_len = cp->delim - sp->rd_pos + 1;
   else
     cp->copy_len = sp->rd_len;
-  if (ensure_space(&cp, &sp))
-    return 1;
-  return 0;
-}
-
-int ensure_space(t_gnl_currop **cpp, t_gnl_buf **spp) {
-
-  t_gnl_currop *cp = **cpp;
-  t_gnl_buf *sp = **spp;
-
-  if (cp->cap - cp->len < cp->copy_len + 1) {
+  if (needed > cp->cap - cp->len) {
+    cp->newcap = cp->len + needed;
+    if (!cp->delim && cp->newcap < SIZE_MAX / 4)
+      cp->newcap += cp->newcap / 2;
+    tmp = scuffed_realloc(cp->len, cp->outbuf, cp->newcap);
+    if (!tmp)
+      tmp = scuffed_realloc(cp->len, cp->outbuf, cp->cap + needed);
+    if (!tmp)
+      return (1);
+    cp->outbuf = tmp;
+  }
+  if (cp->copy_len) {
+    ft_memcpy(cp->outbuf + cp->len, sp->rd_pos, cp->copy_len);
+    sp->rd_pos += cp->copy_len;
+    cp->len += cp->copy_len;
   }
   return 0;
 }

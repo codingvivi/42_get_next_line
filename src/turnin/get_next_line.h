@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/11 23:12:23 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/03 13:32:49 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/03 20:22:52 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ typedef struct s_gnl_buf {
 } t_gnl_buf;
 
 typedef struct s_gnl_currop {
-  char *outbuf;
+  unsigned char *outbuf;
   size_t cap;
   size_t len;
   size_t newcap;

@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/15 19:22:26 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/03 13:14:32 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/03 19:18:42 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,19 @@ void *gnl_memchr(int c, const void *src, size_t count) {
   }
   return NULL;
 }
+
+void *ft_memcpy(void *dest, const void *src, size_t count) {
+  unsigned char *d;
+  const unsigned char *s = src;
+
+  if (!dest && !src && count)
+    return (NULL);
+  d = dest;
+  while (count--)
+    *d++ = *s++;
+  return (dest);
+}
+
 void free_all(t_to_free *tgts) {
   void **curr = &tgts->ptrs[0];
 
@@ -46,6 +59,19 @@ void free_all(t_to_free *tgts) {
     curr++;
     tgts->num--;
   }
+}
+
+void *scuffed_realloc(size_t old_size, void *ptr, size_t new_size) {
+  void *new_ptr;
+
+  if (!ptr)
+    NULL;
+  new_ptr = malloc(new_size);
+  if (!new_ptr)
+    return NULL;
+  ft_memcpy(new_ptr, ptr, old_size);
+  free(ptr);
+  return new_ptr;
 }
 /* char *gnl_setcap(t_gnl_buf stream, t_gnl_currop curr) {
    unsigned char *tmp;
