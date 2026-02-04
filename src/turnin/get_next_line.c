@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/04 20:13:09 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/04 23:19:05 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,30 +23,28 @@ void *free_and_null(t_to_free *tgts);
 void *scuffed_realloc(size_t old_size, void *ptr, size_t new_size);
 void *gnl_memchr(int c, const void *src, size_t count);
 void *ft_memcpy(void *dest, const void *src, size_t count);
-int get_cpy_len(int fd, t_gnl_buf *sp, size_t *cpy_len, unsigned char **dlm);
+int gnl_read(int fd, t_gnl_buf *sp);
+int seek_delim(unsigned char **dlm, size_t *cpy_len, t_gnl_buf *sp);
 int copy_line(unsigned char **read_pos, t_gnl_currop *currop,
               unsigned char **buf, size_t *buf_len);
 int init_vars(unsigned char **sb_p, t_to_free *its_p, unsigned char **buf_p,
               size_t *cap_p);
 
 char *get_next_line(int fd) {
-  static unsigned int count;
   static t_gnl_buf strm;
   t_to_free items2f = (t_to_free){};
   t_gnl_currop curr = (t_gnl_currop){};
-
-  printf("call number: %u", count++);
 
   if (init_vars(&strm.buf, &items2f, &curr.outbuf, &curr.cap))
     return (free_and_null(&items2f));
   while (1) {
     if (strm.rd_pos == strm.rd_end) {
-      if (get_cpy_len(fd, &strm, &curr.copy_len, &curr.delim))
+      if (gnl_read(fd, &strm))
         return (free_and_null(&items2f));
     }
-    assert(curr.copy_len);
-    assert(curr.delim);
-    if (copy_line(&strm.rd_pos, &curr, &curr.outbuf, &curr.cap))
+    if (seek_delim(&curr.delim, &curr.copy_len, &strm))
+      return (free_and_null(&items2f));
+    if (copy_line(&strm.rd_pos, &curr, &curr.outbuf, &curr.len))
       return (free_and_null(&items2f));
     if (curr.delim)
       break;
@@ -71,11 +69,10 @@ int init_vars(unsigned char **sb_p, t_to_free *its_p, unsigned char **buf_p,
   return (0);
 }
 
-int get_cpy_len(int fd, t_gnl_buf *sp, size_t *cpy_len, unsigned char **dlm) {
+int gnl_read(int fd, t_gnl_buf *sp) {
   const ssize_t read_result = read(fd, sp->buf, BUFFER_SIZE);
 
   assert(read_result);
-  printf("%zu", read_result);
   if (read_result < e_r_normal_bounds)
     return 1;
   if (read_result != BUFFER_SIZE)
@@ -83,7 +80,11 @@ int get_cpy_len(int fd, t_gnl_buf *sp, size_t *cpy_len, unsigned char **dlm) {
   sp->rd_pos = sp->buf;
   sp->rd_len = (size_t)read_result;
   sp->rd_end = sp->rd_pos + sp->rd_len;
-  *dlm = gnl_memchr('\n', sp->buf, sp->rd_len);
+  return 0;
+}
+
+int seek_delim(unsigned char **dlm, size_t *cpy_len, t_gnl_buf *sp) {
+  *dlm = gnl_memchr('\n', sp->rd_pos, sp->rd_len);
   assert(dlm);
   if (*dlm)
     *cpy_len = (*dlm - sp->rd_pos) + 1;
@@ -119,7 +120,7 @@ int copy_line(unsigned char **read_pos, t_gnl_currop *currop,
   }
   if (copy_len) {
     ft_memcpy(*buf + *buf_len, *read_pos, copy_len);
-    read_pos += copy_len;
+    *read_pos += copy_len;
     *buf_len += copy_len;
   }
   return 0;
