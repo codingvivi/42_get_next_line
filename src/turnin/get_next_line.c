@@ -6,16 +6,14 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/04 23:19:05 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/04 23:44:06 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
-#import "get_next_line.h"
-#include <assert.h>
+#include "get_next_line.h"
 #include <stddef.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -72,7 +70,6 @@ int init_vars(unsigned char **sb_p, t_to_free *its_p, unsigned char **buf_p,
 int gnl_read(int fd, t_gnl_buf *sp) {
   const ssize_t read_result = read(fd, sp->buf, BUFFER_SIZE);
 
-  assert(read_result);
   if (read_result < e_r_normal_bounds)
     return 1;
   if (read_result != BUFFER_SIZE)
@@ -85,7 +82,6 @@ int gnl_read(int fd, t_gnl_buf *sp) {
 
 int seek_delim(unsigned char **dlm, size_t *cpy_len, t_gnl_buf *sp) {
   *dlm = gnl_memchr('\n', sp->rd_pos, sp->rd_len);
-  assert(dlm);
   if (*dlm)
     *cpy_len = (*dlm - sp->rd_pos) + 1;
   else
