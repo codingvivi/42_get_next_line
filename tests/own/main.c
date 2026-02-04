@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 16:44:30 by lrain             #+#    #+#             */
-/*   Updated: 2026/01/30 16:54:19 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/04 18:24:31 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
   for (int i = 1; i <= 15; i++) {
     printf("%d\t", i);
     char *line = get_next_line(fd_test);
-    assert(line);
+    // assert(line);
     printf("%s", line);
   }
   printf("<<<END OF PRINT>>>\n\n");

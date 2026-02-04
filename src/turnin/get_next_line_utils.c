@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/15 19:22:26 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/04 01:18:37 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/04 19:05:13 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,11 +46,11 @@ void *ft_memcpy(void *dest, const void *src, size_t count) {
   return (dest);
 }
 
-void free_all(t_to_free *tgts) {
+void *free_and_null(t_to_free *tgts) {
   void **curr = &tgts->ptrs[0];
 
   if (!tgts)
-    return;
+    return NULL;
 
   while (tgts->num) {
     if (*curr)
@@ -59,6 +59,7 @@ void free_all(t_to_free *tgts) {
     curr++;
     tgts->num--;
   }
+  return NULL;
 }
 
 void *scuffed_realloc(size_t old_size, void *ptr, size_t new_size) {
