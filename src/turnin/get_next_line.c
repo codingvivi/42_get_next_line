@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/06 17:44:26 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/06 18:59:40 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,8 @@ char	*get_next_line(int fd)
 		curr.outbuf = temp;
 		items2f.ptrs[e_i2fi_outbuf] = curr.outbuf;
 	}
-	free((void *)items2f.ptrs);
+	if (items2f.ptrs)
+		free((void *)items2f.ptrs);
 	return ((char *)curr.outbuf);
 }
 
@@ -85,13 +86,13 @@ int	init_vars(unsigned char **sb_p, t_to_free *i2f_p, unsigned char **obuf_p,
 {
 	if (!*sb_p)
 	{
-		*sb_p = malloc((BUFSIZ + 1) * sizeof(char));
+		*sb_p = malloc((BUFSIZ) * sizeof(char));
 		if (!sb_p)
 			return (1);
-		i2f_p->ptrs[e_i2fi_strmbuf] = *sb_p;
-		i2f_p->num++;
 	}
-	*obuf_p = malloc((BUFFER_SIZE + 1) * sizeof(char));
+	i2f_p->ptrs[e_i2fi_strmbuf] = *sb_p;
+	i2f_p->num++;
+	*obuf_p = malloc((BUFFER_SIZE) * sizeof(char));
 	if (!*obuf_p)
 		return (1);
 	*cap_p = BUFFER_SIZE;
