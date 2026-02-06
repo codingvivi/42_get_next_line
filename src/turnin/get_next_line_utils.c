@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/15 19:22:26 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/06 14:17:10 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/06 17:11:58 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	*free_and_null(t_to_free *tgts)
 	void	**curr;
 
 	curr = &tgts->ptrs[0];
-	if (!tgts)
+	if (!tgts || !tgts->ptrs)
 		return (NULL);
 	while (tgts->num)
 	{
@@ -64,6 +64,8 @@ void	*free_and_null(t_to_free *tgts)
 		curr++;
 		tgts->num--;
 	}
+	free((void *)tgts->ptrs);
+	tgts->ptrs = NULL;
 	return (NULL);
 }
 
@@ -78,7 +80,6 @@ void	*scuffed_realloc(size_t old_size, void *ptr, size_t new_size)
 	{
 		ft_memcpy(new_ptr, ptr, old_size);
 		free(ptr);
-		ptr = NULL;
 	}
 	return (new_ptr);
 }
@@ -94,5 +95,5 @@ void	*scuffed_realloc(size_t old_size, void *ptr, size_t new_size)
    }
    stream.read_len = read(fd, stream.buf, BUFFER_SIZE);
    if (stream.read_len == READ_ERR)
-																																																																return (-1);
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																return (-1);
  } */

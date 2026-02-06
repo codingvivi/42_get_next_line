@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/11 23:12:23 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/06 14:34:39 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/06 17:12:15 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,6 @@
 
 # ifndef NOCHR
 #  define NOCHR 0
-# endif
-
-# ifndef MAXFREES
-#  define MAXFREES 3
 # endif
 
 typedef enum e_std_rflags
@@ -85,7 +81,7 @@ typedef struct s_gnl_currop
 typedef struct s_to_free
 {
 	size_t			num;
-	void			*ptrs[MAXFREES];
+	void			**ptrs;
 }					t_to_free;
 
 char				*get_next_line(int fd);

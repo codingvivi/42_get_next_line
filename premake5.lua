@@ -1,10 +1,12 @@
+require "external/build/premake-ecc/ecc"
+
 workspace "GNL_Workspace"
     configurations { "Debug", "Release" }
     platforms { "Dev", "42" }
     toolset "clang"
 
 
-    buildoptions {"-Wall", "-Werror", "-Wextra", "-fPIE" }
+    buildoptions {"-Wall", "-Werror", "-Wextra", "-fPIE", "-g"}
 
     filter "platforms:Dev"
         architecture "ARM64"

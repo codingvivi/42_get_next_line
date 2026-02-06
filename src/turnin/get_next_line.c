@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/06 15:10:14 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/06 17:44:26 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,18 +16,22 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define OUTBUF_INDEX 1
+typedef enum e_gnl_i2fi
+{
+	e_i2fi_strmbuf,
+	e_i2fi_outbuf,
+}		t_gnl_itf_i;
 
-void	*free_and_null(t_to_free *tgts);
-void	*scuffed_realloc(size_t old_size, void *ptr, size_t new_size);
 void	*gnl_memchr(int c, const void *src, size_t count);
 void	*ft_memcpy(void *dest, const void *src, size_t count);
+void	*free_and_null(t_to_free *tgts);
+void	*scuffed_realloc(size_t old_size, void *ptr, size_t new_size);
+int		init_vars(unsigned char **sb_p, t_to_free *i2f_p,
+			unsigned char **obuf_p, size_t *cap_p);
 int		gnl_read(int fd, t_gnl_buf *sp);
 int		seek_delim(unsigned char **dlm, size_t *cpy_len, t_gnl_buf *sp);
 int		copy_line(unsigned char **read_pos, t_gnl_currop *curr_p,
-			unsigned char **buf, size_t *buf_len, t_to_free *itf_p);
-int		init_vars(unsigned char **sb_p, t_to_free *itf_p,
-			unsigned char **obuf_p, size_t *cap_p);
+			unsigned char **buf, size_t *buf_len, void **i2f_buf_entry);
 
 char	*get_next_line(int fd)
 {
@@ -36,7 +40,15 @@ char	*get_next_line(int fd)
 	t_gnl_currop		curr;
 	unsigned char		*temp;
 
-	items2f = (t_to_free){};
+	items2f = (t_to_free){.ptrs = (void **)malloc(2 * sizeof(void **)),
+		.num = 2};
+	if (!items2f.ptrs)
+		return (NULL);
+	while (items2f.num > 0)
+	{
+		items2f.ptrs[items2f.num - 1] = NULL;
+		items2f.num--;
+	}
 	curr = (t_gnl_currop){};
 	if (init_vars(&strm.buf, &items2f, &curr.outbuf, &curr.cap))
 		return (free_and_null(&items2f));
@@ -49,7 +61,8 @@ char	*get_next_line(int fd)
 		}
 		if (seek_delim(&curr.delim, &curr.copy_len, &strm))
 			return (free_and_null(&items2f));
-		if (copy_line(&strm.rd_pos, &curr, &curr.outbuf, &curr.len, &items2f))
+		if (copy_line(&strm.rd_pos, &curr, &curr.outbuf, &curr.len,
+				&items2f.ptrs[e_i2fi_outbuf]))
 			return (free_and_null(&items2f));
 		if (curr.delim)
 			break ;
@@ -61,25 +74,29 @@ char	*get_next_line(int fd)
 		if (!temp)
 			return (free_and_null(&items2f));
 		curr.outbuf = temp;
+		items2f.ptrs[e_i2fi_outbuf] = curr.outbuf;
 	}
+	free((void *)items2f.ptrs);
 	return ((char *)curr.outbuf);
 }
 
-int	init_vars(unsigned char **sb_p, t_to_free *itf_p, unsigned char **obuf_p,
+int	init_vars(unsigned char **sb_p, t_to_free *i2f_p, unsigned char **obuf_p,
 		size_t *cap_p)
 {
 	if (!*sb_p)
 	{
 		*sb_p = malloc((BUFSIZ + 1) * sizeof(char));
-		itf_p->ptrs[itf_p->num++] = *sb_p;
 		if (!sb_p)
 			return (1);
+		i2f_p->ptrs[e_i2fi_strmbuf] = *sb_p;
+		i2f_p->num++;
 	}
 	*obuf_p = malloc((BUFFER_SIZE + 1) * sizeof(char));
 	if (!*obuf_p)
 		return (1);
 	*cap_p = BUFFER_SIZE;
-	itf_p->ptrs[itf_p->num++] = *obuf_p;
+	i2f_p->ptrs[e_i2fi_outbuf] = *obuf_p;
+	i2f_p->num++;
 	return (0);
 }
 
@@ -108,12 +125,12 @@ int	seek_delim(unsigned char **dlm, size_t *cpy_len, t_gnl_buf *sp)
 }
 
 /*
-  I still know it's unhinged to pass struct AND individual members,
+  I know it's unhinged to pass struct AND individual members,
   but this is leagues more readable than 18 struct member calls.
   I wouldn't do this in projects outside of 42 ever, I promise.
 */
 int	copy_line(unsigned char **read_pos, t_gnl_currop *curr_p,
-		unsigned char **buf, size_t *buf_len, t_to_free *itf_p)
+		unsigned char **buf, size_t *buf_len, void **i2f_buf_entry)
 {
 	size_t				cap;
 	size_t				copy_len;
@@ -134,7 +151,7 @@ int	copy_line(unsigned char **read_pos, t_gnl_currop *curr_p,
 		if (!tmp)
 			return (1);
 		*buf = tmp;
-		itf_p->ptrs[OUTBUF_INDEX] = *buf;
+		*i2f_buf_entry = *buf;
 		cap = new_cap;
 	}
 	if (copy_len)
