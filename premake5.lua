@@ -4,7 +4,7 @@ workspace "GNL_Workspace"
     toolset "clang"
 
 
-    buildoptions {"-Wall", "-Werror", "-Wextra"}
+    buildoptions {"-Wall", "-Werror", "-Wextra", "-fPIE" }
 
     filter "platforms:Dev"
         architecture "ARM64"
