@@ -38,7 +38,7 @@ project "test_runner"
     kind "ConsoleApp"
     language "C"
 
-    files { "tests/own/main.c" }
+    files { "tests/main.c" }
 
     -- allows main.c to use #include "get_next_line.h"
     includedirs { "src/turnin" }
