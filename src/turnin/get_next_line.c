@@ -144,7 +144,7 @@ int	init_vars(unsigned char **sb_p, size_t *cap_p, unsigned char **obuf_p)
 	if (!*sb_p)
 	{
 		*sb_p = malloc((BUFSIZ) * sizeof(char));
-		if (!sb_p)
+		if (!*sb_p)
 			return (1);
 	}
 	*obuf_p = malloc((BUFFER_SIZE) * sizeof(char));
