@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/08 18:50:23 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/08 19:03:42 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,15 +25,10 @@ char	*get_next_line(int fd)
 {
 	static t_gnl_buf	strm;
 	t_gnl_currop		curr;
-	unsigned char		*temp;
-	int					error;
-	const ssize_t		read_result = read(fd, strm.buf, BUFFER_SIZE);
+	ssize_t				read_result;
 	size_t				new_cap;
 	unsigned char		*tmp;
 
-	curr = (t_gnl_currop){};
-	temp = NULL;
-	error = 0;
 	// /****************************************************************\
 	// |                        START init_vars                         |
 	// \****************************************************************/
@@ -43,7 +38,8 @@ char	*get_next_line(int fd)
 		if (!strm.buf)
 			return (NULL);
 	}
-	curr.outbuf = NULL;
+	curr = (t_gnl_currop){};
+	tmp = NULL;
 	while (1)
 	{
 		if (strm.rd_pos == strm.rd_end)
@@ -51,6 +47,7 @@ char	*get_next_line(int fd)
 			//	/****************************************************************\
 			// |                         START gnl_read                         |
 			// \****************************************************************/
+			read_result = read(fd, strm.buf, BUFFER_SIZE);
 			if (read_result == e_r_err)
 			{
 				free(strm.buf);
@@ -129,8 +126,8 @@ char	*get_next_line(int fd)
 	}
 	if (curr.cap > curr.len)
 	{
-		temp = scuffed_realloc(curr.len, curr.outbuf, curr.len);
-		if (!temp)
+		tmp = scuffed_realloc(curr.len, curr.outbuf, curr.len);
+		if (!tmp)
 		{
 			if (strm.buf)
 			{
@@ -144,9 +141,12 @@ char	*get_next_line(int fd)
 			}
 			return (NULL);
 		}
-		curr.outbuf = temp;
+		curr.outbuf = tmp;
 	}
 	if (strm.flags)
+	{
 		free(strm.buf);
+		strm.buf = NULL;
+	}
 	return ((char *)curr.outbuf);
 }
