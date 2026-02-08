@@ -52,6 +52,7 @@ char	*get_next_line(int fd)
 	- 1] = NULL; items2f.num--;
 	}*/
 	curr = (t_gnl_currop){};
+	const ssize_t	read_result = read(fd, spbuf, BUFFER_SIZE);
 	if (init_vars(&strm.buf, &curr.cap, &curr.outbuf))
 	{
 		if (strm.buf)
@@ -85,6 +86,8 @@ char	*get_next_line(int fd)
 				return (NULL);
 			}
 		}
+		if (!strm.rd_len)
+			break;
 		if (seek_delim(&curr.delim, &curr.copy_len, &strm))
 		{
 			if (strm.buf)
@@ -116,25 +119,28 @@ char	*get_next_line(int fd)
 		if (curr.delim)
 			break ;
 	}
-	curr.outbuf[curr.len++] = 0;
-	if (curr.cap > curr.len)
+	if (strm.rd_len)
 	{
-		temp = scuffed_realloc(curr.len, curr.outbuf, curr.len);
-		if (!temp)
+		curr.outbuf[curr.len++] = 0;
+		if (curr.cap > curr.len)
 		{
-			if (strm.buf)
+			temp = scuffed_realloc(curr.len, curr.outbuf, curr.len);
+			if (!temp)
 			{
-				free(strm.buf);
-				strm.buf = NULL;
+				if (strm.buf)
+				{
+					free(strm.buf);
+					strm.buf = NULL;
+				}
+				if (curr.outbuf)
+				{
+					free(curr.outbuf);
+				}
+				curr.outbuf = NULL;
+				return (NULL);
 			}
-			if (curr.outbuf)
-			{
-				free(curr.outbuf);
-			}
-			curr.outbuf = NULL;
-			return (NULL);
+			curr.outbuf = temp;
 		}
-		curr.outbuf = temp;
 	}
 	if (strm.flags)
 		free(strm.buf);
@@ -163,9 +169,9 @@ int	gnl_read(int fd, t_gnl_buf *sp)
 {
 	const ssize_t	read_result = read(fd, sp->buf, BUFFER_SIZE);
 
-	if (read_result < e_r_normal_bounds)
+	if (read_result == e_r_err)
 		return (1);
-	if (read_result != BUFFER_SIZE)
+	if (read_result != BUFFER_SIZE || read_result == 0)
 		sp->flags |= e_r_eof;
 	sp->rd_pos = sp->buf;
 	sp->rd_len = (size_t)read_result;

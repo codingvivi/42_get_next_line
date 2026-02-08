@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 16:44:30 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/07 02:17:25 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/07 16:52:00 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,13 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 int main(int argc, char **argv) {
   // const char *default_path = "tests/resources/external/Bee Movie Script.txt";
-  const char *default_path = "tests/resources/own/pagesize_test_8192.txt";
+  // const char *default_path = "tests/resources/own/pagesize_test_8192.txt";
+  const char *default_path = "tests/resources/own/1char.txt";
+  // const char *default_path = "tests/resources/own/1newline.txt";
 
   const char *path;
 
@@ -32,13 +35,16 @@ int main(int argc, char **argv) {
   // printf("Ouggh ");
   const int fd_test = open(path, O_RDONLY);
   assert(fd_test != -1);
-  for (int i = 1; i <= 100; i++) {
+  // char test[2];
+  // printf("%zd", read(fd_test, test, 1));
+  for (int i = 1; i <= 2; i++) {
     printf("%d\t", i);
     char *line = get_next_line(fd_test);
     // assert(line);
     printf("%s", line);
     free(line);
   }
+
   printf("<<<END OF PRINT>>>\n\n");
   printf("Buffer size:%d\nMemory size: %d", BUFFER_SIZE, MEMSIZE_INIT);
   return (0);

@@ -5,6 +5,7 @@ workspace "GNL_Workspace"
     platforms { "Dev", "42" }
     toolset "clang"
 
+    --defines {  "BUFFER_SIZE=1" }
 
     buildoptions {"-Wall", "-Werror", "-Wextra", "-fPIE", "-g"}
 
