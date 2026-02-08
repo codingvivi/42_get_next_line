@@ -6,10 +6,14 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 16:44:30 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/08 18:52:35 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/08 22:45:47 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+
+#ifndef LINES
+#define LINES 18
+#endif
 
 #include "get_next_line.h"
 #include <assert.h>
@@ -19,10 +23,11 @@
 #include <unistd.h>
 
 int main(int argc, char **argv) {
-  const char *default_path = "tests/resources/external/Bee Movie Script.txt";
+  // const char *default_path = "tests/resources/external/Bee Movie Script.txt";
   // const char *default_path = "tests/resources/own/pagesize_test_8192.txt";
   // const char *default_path = "tests/resources/own/1char.txt";
   // const char *default_path = "tests/resources/own/1newline.txt";
+  const char *default_path = "tests/resources/own/empty.txt";
 
   const char *path;
 
@@ -37,7 +42,7 @@ int main(int argc, char **argv) {
   assert(fd_test != -1);
   // char test[2];
   // printf("%zd", read(fd_test, test, 1));
-  for (int i = 1; i <= 20; i++) {
+  for (int i = 1; i <= LINES; i++) {
     printf("%d\t", i);
     char *line = get_next_line(fd_test);
     // assert(line);
