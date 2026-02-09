@@ -1,7 +1,7 @@
 require "external/build/premake-ecc/ecc"
 
 workspace "GNL_Workspace"
-    configurations { "Debug", "Release" }
+    configurations {"Release", "Debug1b", "Debug10b", "Debug1mb" }
     platforms { "Dev", "42" }
     toolset "clang"
 
@@ -19,7 +19,16 @@ workspace "GNL_Workspace"
         buildoptions { "--target=x86_64-linux-gnu" }
         linkoptions { "--target=x86_64-linux-gnu", "-fuse-ld=lld" }
 
-    filter {}
+    filter "configurations:Debug1b"
+        defines {"BUFFER_SIZE=1"}
+
+    filter "configurations:Debug10b"
+        defines {"BUFFER_SIZE=10"}
+
+    filter "configurations:Debug1mb"
+        defines {"BUFFER_SIZE=1000000"}
+
+
 
 project "get_next_line"
     kind "StaticLib"
@@ -44,3 +53,5 @@ project "test_runner"
     -- allows main.c to use #include "get_next_line.h"
     includedirs { "src/turnin" }
     links { "get_next_line" }
+
+
