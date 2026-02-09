@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/09 02:31:59 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/09 02:41:20 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ char	*get_next_line(int fd)
 				return (NULL);
 			}
 			if (read_result == e_r_eof)
-				strm.flags |= e_gnl_err;
+				strm.flags |= e_gnl_eof;
 			strm.rd_pos = strm.buf;
 			strm.rd_len = (size_t)read_result;
 			strm.rd_end = strm.rd_pos + strm.rd_len;
@@ -117,6 +117,7 @@ char	*get_next_line(int fd)
 		}
 		ft_memcpy(curr.outbuf + curr.len, strm.rd_pos, curr.copy_len);
 		strm.rd_pos += curr.copy_len;
+		strm.rd_len -= curr.copy_len;
 		curr.len += curr.copy_len;
 		if (curr.delim)
 			break ;
