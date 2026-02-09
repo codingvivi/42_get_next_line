@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 16:44:30 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/09 16:25:05 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/09 18:29:47 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,13 @@
 #include <unistd.h>
 
 int main(int argc, char **argv) {
-  // const char *default_path = "tests/resources/external/Bee Movie Script.txt";
+  const char *default_path = "tests/resources/external/Bee Movie Script.txt";
   //  const char *default_path = "tests/resources/own/pagesize_test_8192.txt";
   //  const char *default_path = "tests/resources/own/1char.txt";
   //  const char *default_path = "tests/resources/own/1newline.txt";
   //  const char *default_path = "tests/resources/own/empty.txt";
   // const char *default_path = "tests/resources/external/variable_nl.txt";
-  const char *default_path = "tests/resources/external/giant_line.txt";
+  // const char *default_path = "tests/resources/external/giant_line.txt";
   const unsigned int default_lines = 18;
   char **endptr_num = NULL;
 

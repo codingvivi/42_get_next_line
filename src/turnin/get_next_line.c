@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/09 02:41:20 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/09 19:11:37 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,18 +28,21 @@ char	*get_next_line(int fd)
 	ssize_t				read_result;
 	size_t				new_cap;
 	unsigned char		*tmp;
+	unsigned int		run;
 
+	run = 0;
 	// /****************************************************************\
 	// |                        START init_vars                         |
 	// \****************************************************************/
 	if (!strm.buf)
 	{
-		strm.buf = malloc((BUFSIZ) * sizeof(char));
+		strm.buf = malloc((BUFFER_SIZE) * sizeof(char));
 		if (!strm.buf)
 			return (NULL);
 	}
 	curr = (t_gnl_currop){};
 	tmp = NULL;
+	run++;
 	while (1)
 	{
 		if (strm.rd_pos == strm.rd_end)
@@ -47,13 +50,14 @@ char	*get_next_line(int fd)
 			//	/****************************************************************\
 			// |                         START gnl_read                         |
 			// \****************************************************************/
-			read_result = read(fd, strm.buf, BUFFER_SIZE);
+			if (run == 3)
+				read_result = -1;
+			else
+				read_result = read(fd, strm.buf, BUFFER_SIZE);
 			if (read_result == e_r_err)
 			{
 				strm.flags |= e_gnl_err;
-				free(strm.buf);
-				strm.buf = NULL;
-				return (NULL);
+				break ;
 			}
 			if (read_result == e_r_eof)
 				strm.flags |= e_gnl_eof;
@@ -145,7 +149,16 @@ char	*get_next_line(int fd)
 		}
 		curr.outbuf[curr.len++] = 0;
 	}
-	if (strm.flags)
+	if (strm.flags & e_gnl_err)
+	{
+		free(strm.buf);
+		strm.buf = NULL;
+		strm.rd_pos = NULL;
+		strm.rd_end = NULL;
+		strm.rd_len = 0;
+		strm.flags &= ~e_gnl_err;
+	}
+	if (strm.flags & e_gnl_eof)
 	{
 		free(strm.buf);
 		strm.buf = NULL;
