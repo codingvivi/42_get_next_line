@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/11 23:12:23 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/06 17:12:15 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/09 02:21:08 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ typedef enum e_std_rflags
 typedef enum e_gnl_rflags
 {
 	e_gnl_eof = 1,
+	e_gnl_err = 2,
 }					t_gnl_rflags;
 
 typedef enum e_read_flags

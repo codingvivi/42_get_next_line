@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/09 01:02:39 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/09 02:25:11 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,12 +50,13 @@ char	*get_next_line(int fd)
 			read_result = read(fd, strm.buf, BUFFER_SIZE);
 			if (read_result == e_r_err)
 			{
+				strm.flags |= e_gnl_err;
 				free(strm.buf);
 				strm.buf = NULL;
 				return (NULL);
 			}
-			if (read_result != BUFFER_SIZE || read_result == 0)
-				strm.flags |= e_r_eof;
+			if (read_result == e_r_eof)
+				strm.flags |= e_gnl_err;
 			strm.rd_pos = strm.buf;
 			strm.rd_len = (size_t)read_result;
 			strm.rd_end = strm.rd_pos + strm.rd_len;
@@ -122,7 +123,7 @@ char	*get_next_line(int fd)
 	}
 	if (curr.outbuf)
 	{
-		if (curr.cap > curr.len + 1)
+		if (curr.cap < curr.len + 1)
 		{
 			tmp = scuffed_realloc(curr.len, curr.outbuf, curr.len + 1);
 			if (!tmp)
@@ -142,12 +143,14 @@ char	*get_next_line(int fd)
 			curr.outbuf = tmp;
 		}
 		curr.outbuf[curr.len++] = 0;
-		curr.len++;
 	}
-	if (read_result < 1)
+	if (strm.flags)
 	{
 		free(strm.buf);
 		strm.buf = NULL;
+		strm.rd_pos = NULL;
+		strm.rd_end = NULL;
+		strm.flags = 0;
 	}
 	return ((char *)curr.outbuf);
 }
