@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 16:44:30 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/08 22:45:47 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/09 00:50:43 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ int main(int argc, char **argv) {
   // const char *default_path = "tests/resources/own/pagesize_test_8192.txt";
   // const char *default_path = "tests/resources/own/1char.txt";
   // const char *default_path = "tests/resources/own/1newline.txt";
-  const char *default_path = "tests/resources/own/empty.txt";
+  // const char *default_path = "tests/resources/own/empty.txt";
+  const char *default_path = "tests/resources/external/variable_nls.txt";
 
   const char *path;
 

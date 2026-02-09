@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/08 19:03:42 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/09 01:02:39 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,32 +118,33 @@ char	*get_next_line(int fd)
 		strm.rd_pos += curr.copy_len;
 		curr.len += curr.copy_len;
 		if (curr.delim)
-		{
-			curr.outbuf[curr.len++] = 0;
-			curr.len++;
 			break ;
-		}
 	}
-	if (curr.cap > curr.len)
+	if (curr.outbuf)
 	{
-		tmp = scuffed_realloc(curr.len, curr.outbuf, curr.len);
-		if (!tmp)
+		if (curr.cap > curr.len + 1)
 		{
-			if (strm.buf)
+			tmp = scuffed_realloc(curr.len, curr.outbuf, curr.len + 1);
+			if (!tmp)
 			{
-				free(strm.buf);
-				strm.buf = NULL;
+				if (strm.buf)
+				{
+					free(strm.buf);
+					strm.buf = NULL;
+				}
+				if (curr.outbuf)
+				{
+					free(curr.outbuf);
+					curr.outbuf = NULL;
+				}
+				return (NULL);
 			}
-			if (curr.outbuf)
-			{
-				free(curr.outbuf);
-				curr.outbuf = NULL;
-			}
-			return (NULL);
+			curr.outbuf = tmp;
 		}
-		curr.outbuf = tmp;
+		curr.outbuf[curr.len++] = 0;
+		curr.len++;
 	}
-	if (strm.flags)
+	if (read_result < 1)
 	{
 		free(strm.buf);
 		strm.buf = NULL;
