@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/09 19:11:37 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/09 19:22:23 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,8 @@ char	*get_next_line(int fd)
 	ssize_t				read_result;
 	size_t				new_cap;
 	unsigned char		*tmp;
-	unsigned int		run;
+	static unsigned int	run = 0;
 
-	run = 0;
 	// /****************************************************************\
 	// |                        START init_vars                         |
 	// \****************************************************************/
