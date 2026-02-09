@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/09 02:25:11 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/09 02:31:59 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,6 +150,7 @@ char	*get_next_line(int fd)
 		strm.buf = NULL;
 		strm.rd_pos = NULL;
 		strm.rd_end = NULL;
+		strm.rd_len = 0;
 		strm.flags = 0;
 	}
 	return ((char *)curr.outbuf);
