@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/09 19:49:49 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/09 19:56:18 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ char	*get_next_line(int fd)
 			strm.rd_len = (size_t)read_result;
 			strm.rd_end = strm.rd_pos + strm.rd_len;
 		}
-		else if (run == 3)
+		if (run == 3)
 		{
 			strm.flags |= e_gnl_err;
 			break ;
