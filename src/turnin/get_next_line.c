@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/09 19:22:23 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/09 19:49:49 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,17 +42,15 @@ char	*get_next_line(int fd)
 	curr = (t_gnl_currop){};
 	tmp = NULL;
 	run++;
+	printf("%u", run);
 	while (1)
 	{
-		if (strm.rd_pos == strm.rd_end)
+		if (strm.rd_pos == strm.rd_end && run != 3)
 		{
 			//	/****************************************************************\
 			// |                         START gnl_read                         |
 			// \****************************************************************/
-			if (run == 3)
-				read_result = -1;
-			else
-				read_result = read(fd, strm.buf, BUFFER_SIZE);
+			read_result = read(fd, strm.buf, BUFFER_SIZE);
 			if (read_result == e_r_err)
 			{
 				strm.flags |= e_gnl_err;
@@ -63,6 +61,11 @@ char	*get_next_line(int fd)
 			strm.rd_pos = strm.buf;
 			strm.rd_len = (size_t)read_result;
 			strm.rd_end = strm.rd_pos + strm.rd_len;
+		}
+		else if (run == 3)
+		{
+			strm.flags |= e_gnl_err;
+			break ;
 		}
 		if (!strm.rd_len)
 			break ;
