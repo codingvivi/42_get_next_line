@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/10 19:45:31 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/10 21:53:39 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,6 +121,7 @@ int	gnl_copy(t_gnl_buf *sp, t_gnl_currop *cp)
 char	*get_output_val(t_gnl_currop *cp, t_gnl_buf *sp)
 {
 	unsigned char	*tmp;
+	unsigned int	eof_state;
 
 	if (cp->outbuf)
 	{
@@ -137,6 +138,7 @@ char	*get_output_val(t_gnl_currop *cp, t_gnl_buf *sp)
 		}
 		cp->outbuf[cp->len++] = 0;
 	}
+	eof_state = 0;
 	if (sp->flags)
 	{
 		ensure_freed(&sp->buf);
@@ -146,10 +148,11 @@ char	*get_output_val(t_gnl_currop *cp, t_gnl_buf *sp)
 		if (sp->flags & e_gnl_err)
 		{
 			sp->flags &= ~e_gnl_err;
+			eof_state = sp->flags;
 			ensure_freed(&cp->outbuf);
 		}
-		else
-			sp->flags = 0;
+		sp->flags = 0;
+		sp->flags = eof_state;
 	}
 	return ((char *)cp->outbuf);
 }
