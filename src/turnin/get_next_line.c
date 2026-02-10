@@ -6,27 +6,30 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/09 20:44:52 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/10 18:54:23 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 void	*gnl_memchr(int c, const void *src, size_t count);
 void	*ft_memcpy(void *dest, const void *src, size_t count);
-void	*free_and_null(t_to_free *tgts);
 void	*scuffed_realloc(size_t old_size, void *ptr, size_t new_size);
+void	gnl_ensure_freed(unsigned char **tgt);
+
+int		ensure_valid_read(t_gnl_buf *s, int fd);
+int		gnl_copy(t_gnl_buf *sp, t_gnl_currop *cp);
 
 char	*get_next_line(int fd)
 {
 	static t_gnl_buf	strm;
 	t_gnl_currop		curr;
-	ssize_t				read_result;
-	size_t				new_cap;
 	unsigned char		*tmp;
 
 	if (!strm.buf)
@@ -39,21 +42,7 @@ char	*get_next_line(int fd)
 	tmp = NULL;
 	while (1)
 	{
-		if (strm.rd_pos == strm.rd_end)
-		{
-			read_result = read(fd, strm.buf, BUFFER_SIZE);
-			if (read_result == e_r_err)
-			{
-				strm.flags |= e_gnl_err;
-				break ;
-			}
-			if (read_result == e_r_eof)
-				strm.flags |= e_gnl_eof;
-			strm.rd_pos = strm.buf;
-			strm.rd_len = (size_t)read_result;
-			strm.rd_end = strm.rd_pos + strm.rd_len;
-		}
-		if (!strm.rd_len)
+		if (ensure_valid_read(&strm, fd))
 			break ;
 		curr.delim = gnl_memchr('\n', strm.rd_pos, strm.rd_len);
 		if (curr.delim)
@@ -64,47 +53,15 @@ char	*get_next_line(int fd)
 		{
 			curr.outbuf = malloc((curr.copy_len + 1) * sizeof(char));
 			if (!curr.outbuf)
-			{
-				if (strm.buf)
-				{
-					free(strm.buf);
-					strm.buf = NULL;
-				}
-			}
+				gnl_ensure_freed(&strm.buf);
 			curr.cap = curr.copy_len + 1;
 		}
-		if (curr.copy_len + 1 > curr.cap - curr.len)
+		if (gnl_copy(&strm, &curr))
 		{
-			new_cap = curr.len + curr.copy_len + 1;
-			if (!curr.delim && new_cap < SIZE_MAX / 4)
-				new_cap += new_cap / 2;
-			tmp = scuffed_realloc(curr.len, curr.outbuf, new_cap);
-			if (!tmp)
-			{
-				new_cap = curr.cap + curr.copy_len + 1;
-				tmp = scuffed_realloc(curr.len, curr.outbuf, new_cap);
-			}
-			if (!tmp)
-			{
-				if (strm.buf)
-				{
-					free(strm.buf);
-					strm.buf = NULL;
-				}
-				if (curr.outbuf)
-				{
-					free(curr.outbuf);
-					curr.outbuf = NULL;
-				}
-				return (NULL);
-			}
-			curr.outbuf = tmp;
-			curr.cap = new_cap;
+			gnl_ensure_freed(&strm.buf);
+			gnl_ensure_freed(&curr.outbuf);
+			return (NULL);
 		}
-		ft_memcpy(curr.outbuf + curr.len, strm.rd_pos, curr.copy_len);
-		strm.rd_pos += curr.copy_len;
-		strm.rd_len -= curr.copy_len;
-		curr.len += curr.copy_len;
 		if (curr.delim)
 			break ;
 	}
@@ -115,44 +72,78 @@ char	*get_next_line(int fd)
 			tmp = scuffed_realloc(curr.len, curr.outbuf, curr.len + 1);
 			if (!tmp)
 			{
-				if (strm.buf)
-				{
-					free(strm.buf);
-					strm.buf = NULL;
-				}
-				if (curr.outbuf)
-				{
-					free(curr.outbuf);
-					curr.outbuf = NULL;
-				}
+				gnl_ensure_freed(&strm.buf);
+				gnl_ensure_freed(&curr.outbuf);
 				return (NULL);
 			}
 			curr.outbuf = tmp;
 		}
 		curr.outbuf[curr.len++] = 0;
 	}
-	if (strm.flags & e_gnl_err)
+	if (strm.flags)
 	{
-		free(strm.buf);
-		strm.buf = NULL;
+		gnl_ensure_freed(&strm.buf);
 		strm.rd_pos = NULL;
 		strm.rd_end = NULL;
 		strm.rd_len = 0;
-		strm.flags &= ~e_gnl_err;
-		if (curr.outbuf)
+		if (strm.flags & e_gnl_err)
 		{
-			free(curr.outbuf);
-			curr.outbuf = NULL;
+			strm.flags &= ~e_gnl_err;
+			gnl_ensure_freed(&curr.outbuf);
 		}
-	}
-	if (strm.flags & e_gnl_eof)
-	{
-		free(strm.buf);
-		strm.buf = NULL;
-		strm.rd_pos = NULL;
-		strm.rd_end = NULL;
-		strm.rd_len = 0;
-		strm.flags = 0;
+		else
+			strm.flags = 0;
 	}
 	return ((char *)curr.outbuf);
+}
+
+int	ensure_valid_read(t_gnl_buf *s, int fd)
+{
+	ssize_t	read_result;
+
+	if (s->rd_pos == s->rd_end)
+	{
+		read_result = read(fd, s->buf, BUFFER_SIZE);
+		if (read_result == e_r_err)
+		{
+			s->flags |= e_gnl_err;
+			return (1);
+		}
+		if (read_result == e_r_eof)
+			s->flags |= e_gnl_eof;
+		s->rd_pos = s->buf;
+		s->rd_len = (size_t)read_result;
+		s->rd_end = s->rd_pos + s->rd_len;
+	}
+	if (!s->rd_len)
+		return (1);
+	return (0);
+}
+
+int	gnl_copy(t_gnl_buf *sp, t_gnl_currop *cp)
+{
+	size_t			new_cap;
+	unsigned char	*temp;
+
+	if (cp->copy_len + 1 > cp->cap - cp->len)
+	{
+		new_cap = cp->len + cp->copy_len + 1;
+		if (!cp->delim && new_cap < SIZE_MAX / 4)
+			new_cap += new_cap / 2;
+		temp = scuffed_realloc(cp->len, cp->outbuf, new_cap);
+		if (!temp)
+		{
+			new_cap = cp->cap + cp->copy_len + 1;
+			temp = scuffed_realloc(cp->len, cp->outbuf, new_cap);
+		}
+		if (!temp)
+			return (1);
+		cp->outbuf = temp;
+		cp->cap = new_cap;
+	}
+	ft_memcpy(cp->outbuf + cp->len, sp->rd_pos, cp->copy_len);
+	sp->rd_pos += cp->copy_len;
+	sp->rd_len -= cp->copy_len;
+	cp->len += cp->copy_len;
+	return (0);
 }
