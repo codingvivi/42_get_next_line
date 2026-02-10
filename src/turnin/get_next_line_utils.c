@@ -63,7 +63,7 @@ void	*scuffed_realloc(size_t old_size, void *ptr, size_t new_size)
 	}
 	return (new_ptr);
 }
-void	gnl_ensure_freed(unsigned char **tgt)
+void	ensure_freed(unsigned char **tgt)
 {
 	if (*tgt)
 	{

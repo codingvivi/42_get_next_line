@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/10 18:54:23 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/10 19:45:31 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,16 +21,16 @@
 void	*gnl_memchr(int c, const void *src, size_t count);
 void	*ft_memcpy(void *dest, const void *src, size_t count);
 void	*scuffed_realloc(size_t old_size, void *ptr, size_t new_size);
-void	gnl_ensure_freed(unsigned char **tgt);
+void	ensure_freed(unsigned char **tgt);
 
 int		ensure_valid_read(t_gnl_buf *s, int fd);
 int		gnl_copy(t_gnl_buf *sp, t_gnl_currop *cp);
+char	*get_output_val(t_gnl_currop *cp, t_gnl_buf *sp);
 
 char	*get_next_line(int fd)
 {
 	static t_gnl_buf	strm;
 	t_gnl_currop		curr;
-	unsigned char		*tmp;
 
 	if (!strm.buf)
 	{
@@ -39,7 +39,6 @@ char	*get_next_line(int fd)
 			return (NULL);
 	}
 	curr = (t_gnl_currop){};
-	tmp = NULL;
 	while (1)
 	{
 		if (ensure_valid_read(&strm, fd))
@@ -53,48 +52,19 @@ char	*get_next_line(int fd)
 		{
 			curr.outbuf = malloc((curr.copy_len + 1) * sizeof(char));
 			if (!curr.outbuf)
-				gnl_ensure_freed(&strm.buf);
+				ensure_freed(&strm.buf);
 			curr.cap = curr.copy_len + 1;
 		}
 		if (gnl_copy(&strm, &curr))
 		{
-			gnl_ensure_freed(&strm.buf);
-			gnl_ensure_freed(&curr.outbuf);
+			ensure_freed(&strm.buf);
+			ensure_freed(&curr.outbuf);
 			return (NULL);
 		}
 		if (curr.delim)
 			break ;
 	}
-	if (curr.outbuf)
-	{
-		if (curr.cap < curr.len + 1)
-		{
-			tmp = scuffed_realloc(curr.len, curr.outbuf, curr.len + 1);
-			if (!tmp)
-			{
-				gnl_ensure_freed(&strm.buf);
-				gnl_ensure_freed(&curr.outbuf);
-				return (NULL);
-			}
-			curr.outbuf = tmp;
-		}
-		curr.outbuf[curr.len++] = 0;
-	}
-	if (strm.flags)
-	{
-		gnl_ensure_freed(&strm.buf);
-		strm.rd_pos = NULL;
-		strm.rd_end = NULL;
-		strm.rd_len = 0;
-		if (strm.flags & e_gnl_err)
-		{
-			strm.flags &= ~e_gnl_err;
-			gnl_ensure_freed(&curr.outbuf);
-		}
-		else
-			strm.flags = 0;
-	}
-	return ((char *)curr.outbuf);
+	return (get_output_val(&curr, &strm));
 }
 
 int	ensure_valid_read(t_gnl_buf *s, int fd)
@@ -146,4 +116,40 @@ int	gnl_copy(t_gnl_buf *sp, t_gnl_currop *cp)
 	sp->rd_len -= cp->copy_len;
 	cp->len += cp->copy_len;
 	return (0);
+}
+
+char	*get_output_val(t_gnl_currop *cp, t_gnl_buf *sp)
+{
+	unsigned char	*tmp;
+
+	if (cp->outbuf)
+	{
+		if (cp->cap < cp->len + 1)
+		{
+			tmp = scuffed_realloc(cp->len, cp->outbuf, cp->len + 1);
+			if (!tmp)
+			{
+				ensure_freed(&sp->buf);
+				ensure_freed(&cp->outbuf);
+				return (NULL);
+			}
+			cp->outbuf = tmp;
+		}
+		cp->outbuf[cp->len++] = 0;
+	}
+	if (sp->flags)
+	{
+		ensure_freed(&sp->buf);
+		sp->rd_pos = NULL;
+		sp->rd_end = NULL;
+		sp->rd_len = 0;
+		if (sp->flags & e_gnl_err)
+		{
+			sp->flags &= ~e_gnl_err;
+			ensure_freed(&cp->outbuf);
+		}
+		else
+			sp->flags = 0;
+	}
+	return ((char *)cp->outbuf);
 }
