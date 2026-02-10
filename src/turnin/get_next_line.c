@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/10 21:53:39 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/10 23:09:38 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,9 @@ void	*ft_memcpy(void *dest, const void *src, size_t count);
 void	*scuffed_realloc(size_t old_size, void *ptr, size_t new_size);
 void	ensure_freed(unsigned char **tgt);
 
-int		ensure_valid_read(t_gnl_buf *s, int fd);
-int		gnl_copy(t_gnl_buf *sp, t_gnl_currop *cp);
+int		gnl_get_line(t_gnl_currop *cp, int fd, t_gnl_buf *sp);
+int		ensure_valid_read(t_gnl_buf **spp, int fd);
+int		copy_found(t_gnl_buf **sp, t_gnl_currop **cp);
 char	*get_output_val(t_gnl_currop *cp, t_gnl_buf *sp);
 
 char	*get_next_line(int fd)
@@ -39,77 +40,92 @@ char	*get_next_line(int fd)
 			return (NULL);
 	}
 	curr = (t_gnl_currop){};
-	while (1)
-	{
-		if (ensure_valid_read(&strm, fd))
-			break ;
-		curr.delim = gnl_memchr('\n', strm.rd_pos, strm.rd_len);
-		if (curr.delim)
-			curr.copy_len = (curr.delim - strm.rd_pos) + 1;
-		else
-			curr.copy_len = strm.rd_len;
-		if (!curr.outbuf)
-		{
-			curr.outbuf = malloc((curr.copy_len + 1) * sizeof(char));
-			if (!curr.outbuf)
-				ensure_freed(&strm.buf);
-			curr.cap = curr.copy_len + 1;
-		}
-		if (gnl_copy(&strm, &curr))
-		{
-			ensure_freed(&strm.buf);
-			ensure_freed(&curr.outbuf);
-			return (NULL);
-		}
-		if (curr.delim)
-			break ;
-	}
+	if (gnl_get_line(&curr, fd, &strm))
+		return (NULL);
 	return (get_output_val(&curr, &strm));
 }
 
-int	ensure_valid_read(t_gnl_buf *s, int fd)
+int	gnl_get_line(t_gnl_currop *cp, int fd, t_gnl_buf *sp)
 {
-	ssize_t	read_result;
-
-	if (s->rd_pos == s->rd_end)
+	while (1)
 	{
-		read_result = read(fd, s->buf, BUFFER_SIZE);
+		if (ensure_valid_read(&sp, fd))
+			break ;
+		cp->delim = gnl_memchr('\n', sp->rd_pos, sp->rd_len);
+		if (cp->delim)
+			cp->copy_len = (cp->delim - sp->rd_pos) + 1;
+		else
+			cp->copy_len = sp->rd_len;
+		if (!cp->outbuf)
+		{
+			cp->outbuf = malloc((cp->copy_len + 1) * sizeof(char));
+			if (!cp->outbuf)
+				ensure_freed(&sp->buf);
+			cp->cap = cp->copy_len + 1;
+		}
+		cp->temp = NULL;
+		if (copy_found(&sp, &cp))
+		{
+			ensure_freed(&sp->buf);
+			ensure_freed(&cp->outbuf);
+			return (1);
+		}
+		if (cp->delim)
+			break ;
+	}
+	return (0);
+}
+
+int	ensure_valid_read(t_gnl_buf **spp, int fd)
+{
+	ssize_t		read_result;
+	t_gnl_buf	*sp;
+
+	sp = *spp;
+	if (sp->rd_pos == sp->rd_end)
+	{
+		read_result = read(fd, sp->buf, BUFFER_SIZE);
 		if (read_result == e_r_err)
 		{
-			s->flags |= e_gnl_err;
+			sp->flags |= e_gnl_err;
 			return (1);
 		}
 		if (read_result == e_r_eof)
-			s->flags |= e_gnl_eof;
-		s->rd_pos = s->buf;
-		s->rd_len = (size_t)read_result;
-		s->rd_end = s->rd_pos + s->rd_len;
+			sp->flags |= e_gnl_eof;
+		sp->rd_pos = sp->buf;
+		sp->rd_len = (size_t)read_result;
+		sp->rd_end = sp->rd_pos + sp->rd_len;
 	}
-	if (!s->rd_len)
+	if (!sp->rd_len)
 		return (1);
 	return (0);
 }
 
-int	gnl_copy(t_gnl_buf *sp, t_gnl_currop *cp)
+/* grows buffer to exact size if delimiter found,
+or geometrically, if not found,
+copies result */
+int	copy_found(t_gnl_buf **spp, t_gnl_currop **cpp)
 {
-	size_t			new_cap;
-	unsigned char	*temp;
+	t_gnl_currop	*cp;
+	t_gnl_buf		*sp;
 
+	cp = *cpp;
+	sp = *spp;
 	if (cp->copy_len + 1 > cp->cap - cp->len)
 	{
-		new_cap = cp->len + cp->copy_len + 1;
-		if (!cp->delim && new_cap < SIZE_MAX / 4)
-			new_cap += new_cap / 2;
-		temp = scuffed_realloc(cp->len, cp->outbuf, new_cap);
-		if (!temp)
+		cp->newcap = cp->len + cp->copy_len + 1;
+		if (!cp->delim && cp->newcap < SIZE_MAX / 4)
+			cp->newcap += cp->newcap / 2;
+		cp->temp = scuffed_realloc(cp->len, cp->outbuf, cp->newcap);
+		if (!cp->temp)
 		{
-			new_cap = cp->cap + cp->copy_len + 1;
-			temp = scuffed_realloc(cp->len, cp->outbuf, new_cap);
+			cp->newcap = cp->cap + cp->copy_len + 1;
+			cp->temp = scuffed_realloc(cp->len, cp->outbuf, cp->newcap);
 		}
-		if (!temp)
+		if (!cp->temp)
 			return (1);
-		cp->outbuf = temp;
-		cp->cap = new_cap;
+		cp->outbuf = cp->temp;
+		cp->cap = cp->newcap;
 	}
 	ft_memcpy(cp->outbuf + cp->len, sp->rd_pos, cp->copy_len);
 	sp->rd_pos += cp->copy_len;
@@ -138,20 +154,17 @@ char	*get_output_val(t_gnl_currop *cp, t_gnl_buf *sp)
 		}
 		cp->outbuf[cp->len++] = 0;
 	}
-	eof_state = 0;
 	if (sp->flags)
 	{
+		eof_state = 0;
 		ensure_freed(&sp->buf);
-		sp->rd_pos = NULL;
-		sp->rd_end = NULL;
-		sp->rd_len = 0;
 		if (sp->flags & e_gnl_err)
 		{
 			sp->flags &= ~e_gnl_err;
 			eof_state = sp->flags;
 			ensure_freed(&cp->outbuf);
 		}
-		sp->flags = 0;
+		*sp = (t_gnl_buf){};
 		sp->flags = eof_state;
 	}
 	return ((char *)cp->outbuf);
