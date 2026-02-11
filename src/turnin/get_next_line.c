@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/10 23:09:38 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/11 17:19:33 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,20 +18,21 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-void	*gnl_memchr(int c, const void *src, size_t count);
-void	*ft_memcpy(void *dest, const void *src, size_t count);
-void	*scuffed_realloc(size_t old_size, void *ptr, size_t new_size);
-void	ensure_freed(unsigned char **tgt);
+void			*gnl_memchr(int c, const void *src, size_t count);
+void			*ft_memcpy(void *dest, const void *src, size_t count);
+void			*scuffed_realloc(size_t old_size, void *ptr, size_t new_size);
+void			ensure_freed(unsigned char **tgt);
 
-int		gnl_get_line(t_gnl_currop *cp, int fd, t_gnl_buf *sp);
-int		ensure_valid_read(t_gnl_buf **spp, int fd);
-int		copy_found(t_gnl_buf **sp, t_gnl_currop **cp);
-char	*get_output_val(t_gnl_currop *cp, t_gnl_buf *sp);
+t_gnl_fflags	line_fetch(t_gnl_currop *cp, int fd, t_gnl_buf *sp);
+bool			ensure_buf_to_seek(t_gnl_buf **spp, int fd);
+bool			copy_found(t_gnl_buf *sp, t_gnl_currop *cp);
+char			*get_output_val(t_gnl_currop *cp, t_gnl_buf *sp);
 
 char	*get_next_line(int fd)
 {
 	static t_gnl_buf	strm;
 	t_gnl_currop		curr;
+	t_gnl_fflags		fetchop_res;
 
 	if (!strm.buf)
 	{
@@ -40,43 +41,46 @@ char	*get_next_line(int fd)
 			return (NULL);
 	}
 	curr = (t_gnl_currop){};
-	if (gnl_get_line(&curr, fd, &strm))
-		return (NULL);
+	while (1)
+	{
+		fetchop_res = line_fetch(&curr, fd, &strm);
+		if (fetchop_res == e_gnl_abort)
+		{
+			ensure_freed(&strm.buf);
+			ensure_freed(&curr.outbuf);
+			return (NULL);
+		}
+		if (fetchop_res == e_gnl_break)
+			break ;
+	}
 	return (get_output_val(&curr, &strm));
 }
 
-int	gnl_get_line(t_gnl_currop *cp, int fd, t_gnl_buf *sp)
+t_gnl_fflags	line_fetch(t_gnl_currop *cp, int fd, t_gnl_buf *sp)
 {
-	while (1)
+	if (!ensure_buf_to_seek(&sp, fd))
+		return (e_gnl_break);
+	cp->delim = gnl_memchr('\n', sp->rd_pos, sp->rd_len);
+	if (cp->delim)
+		cp->copy_len = (cp->delim - sp->rd_pos) + 1;
+	else
+		cp->copy_len = sp->rd_len;
+	if (!cp->outbuf)
 	{
-		if (ensure_valid_read(&sp, fd))
-			break ;
-		cp->delim = gnl_memchr('\n', sp->rd_pos, sp->rd_len);
-		if (cp->delim)
-			cp->copy_len = (cp->delim - sp->rd_pos) + 1;
-		else
-			cp->copy_len = sp->rd_len;
+		cp->outbuf = malloc((cp->copy_len + 1) * sizeof(char));
 		if (!cp->outbuf)
-		{
-			cp->outbuf = malloc((cp->copy_len + 1) * sizeof(char));
-			if (!cp->outbuf)
-				ensure_freed(&sp->buf);
-			cp->cap = cp->copy_len + 1;
-		}
-		cp->temp = NULL;
-		if (copy_found(&sp, &cp))
-		{
 			ensure_freed(&sp->buf);
-			ensure_freed(&cp->outbuf);
-			return (1);
-		}
-		if (cp->delim)
-			break ;
+		cp->cap = cp->copy_len + 1;
 	}
-	return (0);
+	cp->temp = NULL;
+	if (!copy_found(sp, cp))
+		return (e_gnl_abort);
+	if (cp->delim)
+		return (e_gnl_break);
+	return (e_gnl_continue);
 }
 
-int	ensure_valid_read(t_gnl_buf **spp, int fd)
+bool	ensure_buf_to_seek(t_gnl_buf **spp, int fd)
 {
 	ssize_t		read_result;
 	t_gnl_buf	*sp;
@@ -88,7 +92,7 @@ int	ensure_valid_read(t_gnl_buf **spp, int fd)
 		if (read_result == e_r_err)
 		{
 			sp->flags |= e_gnl_err;
-			return (1);
+			return (false);
 		}
 		if (read_result == e_r_eof)
 			sp->flags |= e_gnl_eof;
@@ -97,20 +101,15 @@ int	ensure_valid_read(t_gnl_buf **spp, int fd)
 		sp->rd_end = sp->rd_pos + sp->rd_len;
 	}
 	if (!sp->rd_len)
-		return (1);
-	return (0);
+		return (false);
+	return (true);
 }
 
 /* grows buffer to exact size if delimiter found,
 or geometrically, if not found,
 copies result */
-int	copy_found(t_gnl_buf **spp, t_gnl_currop **cpp)
+bool	copy_found(t_gnl_buf *sp, t_gnl_currop *cp)
 {
-	t_gnl_currop	*cp;
-	t_gnl_buf		*sp;
-
-	cp = *cpp;
-	sp = *spp;
 	if (cp->copy_len + 1 > cp->cap - cp->len)
 	{
 		cp->newcap = cp->len + cp->copy_len + 1;
@@ -123,7 +122,7 @@ int	copy_found(t_gnl_buf **spp, t_gnl_currop **cpp)
 			cp->temp = scuffed_realloc(cp->len, cp->outbuf, cp->newcap);
 		}
 		if (!cp->temp)
-			return (1);
+			return (false);
 		cp->outbuf = cp->temp;
 		cp->cap = cp->newcap;
 	}
@@ -131,7 +130,7 @@ int	copy_found(t_gnl_buf **spp, t_gnl_currop **cpp)
 	sp->rd_pos += cp->copy_len;
 	sp->rd_len -= cp->copy_len;
 	cp->len += cp->copy_len;
-	return (0);
+	return (true);
 }
 
 char	*get_output_val(t_gnl_currop *cp, t_gnl_buf *sp)
