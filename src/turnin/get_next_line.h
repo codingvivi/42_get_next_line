@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/11 23:12:23 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/11 16:54:18 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/11 18:19:11 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ typedef enum e_gnl_fflags
 typedef struct s_gnl_buf
 {
 	unsigned char	*buf;
-	int				flags;
+	unsigned int	flags;
 	size_t			rd_len;
 	unsigned char	*rd_pos;
 	unsigned char	*rd_end;

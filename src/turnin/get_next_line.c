@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/11 17:19:33 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/11 18:22:32 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ t_gnl_fflags	line_fetch(t_gnl_currop *cp, int fd, t_gnl_buf *sp);
 bool			ensure_buf_to_seek(t_gnl_buf **spp, int fd);
 bool			copy_found(t_gnl_buf *sp, t_gnl_currop *cp);
 char			*get_output_val(t_gnl_currop *cp, t_gnl_buf *sp);
+void			*gnl_freeall_b4_null(unsigned char **cb_pp,
+					unsigned char **sb_pp);
 
 char	*get_next_line(int fd)
 {
@@ -124,6 +126,7 @@ bool	copy_found(t_gnl_buf *sp, t_gnl_currop *cp)
 		if (!cp->temp)
 			return (false);
 		cp->outbuf = cp->temp;
+		cp->temp = NULL;
 		cp->cap = cp->newcap;
 	}
 	ft_memcpy(cp->outbuf + cp->len, sp->rd_pos, cp->copy_len);
@@ -135,36 +138,28 @@ bool	copy_found(t_gnl_buf *sp, t_gnl_currop *cp)
 
 char	*get_output_val(t_gnl_currop *cp, t_gnl_buf *sp)
 {
-	unsigned char	*tmp;
-	unsigned int	eof_state;
-
 	if (cp->outbuf)
 	{
 		if (cp->cap < cp->len + 1)
 		{
-			tmp = scuffed_realloc(cp->len, cp->outbuf, cp->len + 1);
-			if (!tmp)
-			{
-				ensure_freed(&sp->buf);
-				ensure_freed(&cp->outbuf);
-				return (NULL);
-			}
-			cp->outbuf = tmp;
+			cp->temp = scuffed_realloc(cp->len, cp->outbuf, cp->len + 1);
+			if (!cp->temp)
+				return (gnl_freeall_b4_null(&cp->outbuf, &sp->buf));
+			cp->outbuf = cp->temp;
 		}
 		cp->outbuf[cp->len++] = 0;
 	}
 	if (sp->flags)
 	{
-		eof_state = 0;
 		ensure_freed(&sp->buf);
 		if (sp->flags & e_gnl_err)
 		{
 			sp->flags &= ~e_gnl_err;
-			eof_state = sp->flags;
+			cp->eof_state = sp->flags;
 			ensure_freed(&cp->outbuf);
 		}
 		*sp = (t_gnl_buf){};
-		sp->flags = eof_state;
+		sp->flags = cp->eof_state;
 	}
 	return ((char *)cp->outbuf);
 }
