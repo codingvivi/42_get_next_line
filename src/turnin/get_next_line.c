@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 22:26:53 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/11 18:22:32 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/11 18:39:59 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,7 @@ char	*get_next_line(int fd)
 	{
 		fetchop_res = line_fetch(&curr, fd, &strm);
 		if (fetchop_res == e_gnl_abort)
-		{
-			ensure_freed(&strm.buf);
-			ensure_freed(&curr.outbuf);
-			return (NULL);
-		}
+			return (gnl_freeall_b4_null(&curr.outbuf, &strm.buf));
 		if (fetchop_res == e_gnl_break)
 			break ;
 	}
