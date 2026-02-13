@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 16:44:30 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/09 18:29:47 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/12 20:24:27 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ int main(int argc, char **argv) {
   }
 
   printf("<<<END OF PRINT>>>\n\n");
-  printf("Buffer size:%d\nMemory size: %d", BUFFER_SIZE, MEMSIZE_INIT);
+  printf("Buffer size:%d\nMemory size: %d", BUFFER_SIZE, BUFFER_SIZE);
   return (0);
 }
+
