@@ -1,71 +1,105 @@
 start: GNL call { shape: oval }
-
 end: Return String { shape: oval }
+abort: Return NULL { shape: oval }
 
-# abort: Return NULL { shape: oval }
+init: init (most) non static vars
 
-
-copylen: length to copy {
-  delim: Seek delim {
-    buf?: Buffer left to seek? { shape: diamond }
-
-    read : Read operations{  
-      read: Read from file descriptor
-   
-      mem: Ensure space for read {
-        expand: {
-          freeold: free main buffer
-          malloc
-        }
-      }
-    }
-
-    seek: Seek delimiter{ shape: rectangle }
+gl: Main line get loop {
+  buf: Ensure there is read buffer left to seek in {
+    noleft?: Has entire buffer been searched (read pos == buffer end pos)? { shape: diamond }
+    read: Read from file descriptor
+    seek: Seek buffer { shape: rectangle }
+    reset: Reset buffer read and end pointers
   }
-
-  calc: Calculate length to copy
+  
+  delim?: was the delimiter found in the search? {shape: diamond}
+  setTillD: size = read buf start till delimiter
+  setTillE: size = read buf start till end of buffer
+  
+  initOut?: Is output buffer allocated yet? {shape: diamond}
+  allocOut: Allocate initial output buffer
+    
+  outcp: copy to output buffer {
+    mem?: Is copy length smaller than capacity left? {shape: diamond}
+    delim?: Are we copying up to a found delimiter? {shape: diamond}
+    prepEx: prepare to grow by exact size
+    geo?: did we not find delimiter && are we within safety margin? {shape: diamond}
+    prepGeo: prepare to grow by 1.5
+    realloc: reallocate buffer
+    ok?: upsizing successful? {shape: diamond}
+    prepEx2: prepare to grow exact size
+    realloc2: reallocate exact
+    copy: copy buffer contents
+    update: Update read and copy info
+  }
+  
+  foundDelim?: Was delimiter found? {shape: diamond}
 }
-
-
-start -> copylen.delim.buf?
-
-copylen.delim.buf? -> copylen.delim.seek: yes
-copylen.delim.buf? -> copylen.delim.read.mem.enough?: no
-
-copylen.delim.read.mem.enough? -> copylen.delim.read.read: yes
-copylen.delim.read.read -> copylen.delim.seek
-
-copylen.delim.read.mem.enough? -> copylen.delim.read.mem.expand.freeold -> copylen.delim.read.mem.expand.malloc -> copylen.delim.read.read
-
-copylen.delim.seek -> copylen.calc  
-
-outcopy: copy to output buffer {
-    mem?: Is copy length smaller then capacity left? {shape: diamond}
-    copy
-    realloc: grow geometrically  
-}
-
-delimOrEOF?: is last output buffer char the delimiter, or did we reach EOF during read?
-
-copylen.calc -> outcopy.mem?
-
-outcopy.mem? -> outcopy.copy: yes
-outcopy.mem? -> outcopy.realloc: no
-outcopy.realloc -> outcopy.copy -> delimOrEOF?
 
 exit: exit routine {
-  unusedMem?: check for unused memory {shape:diamond}
+  unusedMem?: is return buffer larger than exact needed size? {shape: diamond}
   realloc: move to smaller buffer
-  free: free old, too large buffer
-  break  
+  set0: null terminate string
+  eofOrErr?: EOF or Error flag set? {shape: diamond}
+  resetBuf: Free static buffer and reset
 }
 
-delimOrEOF? -> exit.unusedMem?: yes 
+start -> init
+init -> gl.buf.noleft?
 
+gl.buf.noleft? -> gl.buf.seek: no
+gl.buf.noleft? -> gl.buf.read: yes
+gl.buf.read -> gl.buf.reset
+gl.buf.reset -> gl.buf.seek
+
+gl.buf.seek -> gl.delim?
+gl.delim? -> gl.setTillD: yes
+gl.delim? -> gl.setTillE: no
+
+gl.setTillD -> gl.initOut?
+gl.setTillE -> gl.initOut?
+
+gl.initOut? -> gl.outcp.mem?: no
+gl.initOut? -> gl.allocOut: yes
+gl.allocOut -> gl.outcp.copy
+
+gl.outcp.mem? -> gl.outcp.copy: yes
+gl.outcp.mem? -> gl.outcp.delim?: no
+
+gl.outcp.delim? -> gl.outcp.prepEx: yes
+gl.outcp.delim? -> gl.outcp.geo?: no
+
+gl.outcp.geo? -> gl.outcp.prepGeo: yes
+gl.outcp.geo? -> gl.outcp.prepEx: no
+
+gl.outcp.prepGeo -> gl.outcp.realloc
+gl.outcp.prepEx -> gl.outcp.realloc
+
+gl.outcp.realloc -> gl.outcp.ok?
+gl.outcp.ok? -> gl.outcp.copy: yes
+gl.outcp.ok? -> gl.outcp.prepEx2: no
+
+gl.outcp.prepEx2 -> gl.outcp.realloc2
+gl.outcp.realloc2 -> gl.outcp.copy
+gl.outcp.realloc2 -> abort: allocation fails
+
+gl.outcp.copy -> gl.outcp.update
+gl.outcp.update -> gl.foundDelim?
+
+gl.foundDelim? -> exit.set0: yes
+gl.foundDelim? -> gl.buf.noleft?: no
+
+gl.buf.read -> abort: read error
+gl.allocOut -> abort: allocation fails
+
+exit.set0 -> exit.unusedMem?
 exit.unusedMem? -> exit.realloc: yes
-exit.realloc -> exit.free -> exit.break 
+exit.unusedMem? -> exit.eofOrErr?: no
 
-exit.unusedMem? -> exit.break: no
+exit.realloc -> exit.eofOrErr?
+exit.realloc -> abort: allocation fails
 
-exit.break -> end
-delimOrEOF? -> copylen.delim.buf?: no
+exit.eofOrErr? -> exit.resetBuf: yes
+exit.eofOrErr? -> end: no
+
+exit.resetBuf -> end
