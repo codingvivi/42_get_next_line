@@ -1,12 +1,11 @@
-require "external/premake-ecc/ecc"
+require "external/build/premake-ecc/ecc"
 
 workspace "GNL_Workspace"
-    configurations { "Debug", "Release" }
+    configurations {"Release", "Debug1b", "Debug10b", "Debug1mb" }
     platforms { "Dev", "42" }
     toolset "clang"
 
-    -- concat path with premake action run (gmake)
-    location ("build/" .. _ACTION)
+    --defines {  "BUFFER_SIZE=1" }
 
     buildoptions {"-Wall", "-Werror", "-Wextra"}
 
@@ -20,13 +19,23 @@ workspace "GNL_Workspace"
         buildoptions { "--target=x86_64-linux-gnu" }
         linkoptions { "--target=x86_64-linux-gnu", "-fuse-ld=lld" }
 
-    filter {}
+    filter "configurations:Debug1b"
+        buildoptions {"-g"}
+        defines {"BUFFER_SIZE=1"}
+
+    filter "configurations:Debug10b"
+        buildoptions {"-g"}
+        defines {"BUFFER_SIZE=10"}
+
+    filter "configurations:Debug1mb"
+        buildoptions {"-g"}
+        defines {"BUFFER_SIZE=1000000"}
+
+
 
 project "get_next_line"
     kind "StaticLib"
     language "C"
-    targetdir "bin/%{cfg.platform}/%{cfg.buildcfg}"
-    objdir "build/%{cfg.platform}/%{cfg.buildcfg}"
 
     -- Update paths to the new subdirectory
     files {
@@ -41,11 +50,11 @@ project "get_next_line"
 project "test_runner"
     kind "ConsoleApp"
     language "C"
-    targetdir "bin/%{cfg.platform}/%{cfg.buildcfg}"
-    objdir "build/%{cfg.platform}/%{cfg.buildcfg}"
 
-    files { "tests/own/main.c" }
+    files { "tests/main.c" }
 
     -- allows main.c to use #include "get_next_line.h"
     includedirs { "src/turnin" }
     links { "get_next_line" }
+
+

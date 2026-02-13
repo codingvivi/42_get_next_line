@@ -6,18 +6,17 @@ Checks: >
   misc-*,
   readability-*,
 
+  cppcoreguidelines-avoid-non-const-global-variables,
+  bugprone-assignment-in-if-condition,
+  readability-function-size,
+  readability-indentifier-naming,
+
   -bugprone-narrowing-conversions,
   -readability-braces-around-statements,
   -readability-function-size,
   -readability-magic-numbers,
   -readability-uppercase-literal-suffix,
-  -readability-identifier-length
-  WarningsAsErrors: '*'
-
-  cppcoreguidelines-avoid-non-const-global-variables,
-  bugprone-assignment-in-if-condition,
-  readability-function-size,
-  readability-indentifier-naming,
+  -readability-identifier-length,
 
 WarningsAsErrors: '*'
 

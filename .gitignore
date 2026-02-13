@@ -1,10 +1,13 @@
 # auto genned
 .cache/
 bin/
-build/
+obj/
 compile_commands.json
 Makefile
 *.make
+vgcore.*
+*.log
 
+build/
 # just my reference
-reference
+external/reference
