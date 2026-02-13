@@ -7,7 +7,7 @@ workspace "GNL_Workspace"
 
     --defines {  "BUFFER_SIZE=1" }
 
-    buildoptions {"-Wall", "-Werror", "-Wextra", "-fPIE", "-g"}
+    buildoptions {"-Wall", "-Werror", "-Wextra"}
 
     filter "platforms:Dev"
         architecture "ARM64"
@@ -20,12 +20,15 @@ workspace "GNL_Workspace"
         linkoptions { "--target=x86_64-linux-gnu", "-fuse-ld=lld" }
 
     filter "configurations:Debug1b"
+        buildoptions {"-g"}
         defines {"BUFFER_SIZE=1"}
 
     filter "configurations:Debug10b"
+        buildoptions {"-g"}
         defines {"BUFFER_SIZE=10"}
 
     filter "configurations:Debug1mb"
+        buildoptions {"-g"}
         defines {"BUFFER_SIZE=1000000"}
 
 
