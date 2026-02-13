@@ -8,6 +8,5 @@ Makefile
 vgcore.*
 *.log
 
-build/
 # just my reference
 external/reference
