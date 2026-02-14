@@ -83,21 +83,42 @@ in the release_dev configuration.
 
 *note: due to time constraints, I didn't end up using the virtualization the 42 configurations use much, so I won't vouch for them working.*
 
-### Algorithm
+### Running tests
+After building,
+you can run a specific test runner directly
+by targeting its compiled binary by path,
+e.g.:
+```bash
+./bin/Dev/Debug1b/test_runner
+./bin/Dev/Debug10b/test_runner
+./bin/Dev/Release/test_runner
+```
+
+### Reference
+The `reference/` folder contains my notes and their renderings:
+
+- `docs/growth_proof.pdf` — rendered PDF of my math notes working through the 1.5 growth factor proof
+- `docs/program_flow.svg` — rendered flowchart of the program flow
+- `src/growth_proof.typ` — Typst source for the growth proof notes
+- `src/program_flow.d2` — D2 source for the flowchart
+- `src/musl-getdelim.c` — musl's `getdelim` source code
+- `src/musl-getdelim-commented.c` — annotated version of musl's `getdelim`
+
+## Algorithm
 The rough outline of the algorithm is as follows
 (Only visible in my personal repo,
 github backup [here](https://github.com/codingvivi/42_get_next_line/blob/main/reference/docs/program_flow.svg)):
 ![Flow of the program](./reference/docs/program_flow.svg)
 
 
-#### Philosophy
+### Philosophy
 Since musl usually goes for optimized,
 widely compatible code,
 I tried to mirror their approach
 as much as the norm would allow me.
 This is reflect in:
 
-##### Few memory and copy operations
+#### Few memory and copy operations
 Copies and malloc calls are kept to a minimum.
 No costly linked lists,
 no temp buffers that I didn't f'eel like I absolutely needed.
@@ -106,7 +127,7 @@ the buffer to be returned is grown geometrically
 and then shrunk back down to exact size once before return,
 this should help with long lines smaller READBUFFER sizes.
 
-##### 1.5 growth factor
+#### 1.5 growth factor
 The growth-factor for the read buffer is set to 1.5,
 famously used by Facebook
 in their C++ std::vector implementation,
@@ -120,7 +141,7 @@ working through the proof of this number
 are found [here](./reference/docs/growth_proof.pdf)
 (GitHub [backup](https://github.com/codingvivi/42_get_next_line/blob/main/reference/src/growth_proof.typ))
 
-##### Optimized read loop
+#### Optimized read loop
 The main while loop is an endless loop,
 checking and breaking is done manually.
 This should be more efficient
@@ -128,7 +149,7 @@ than checking if some semantically meaningful
 but complex break condition is true constantly,
 even during the copying of every byte.
 
-##### Bitwise flags (for fun)
+#### Bitwise flags (for fun)
 Bitwise operations are used
 to set flags
 that store operations about the read,
