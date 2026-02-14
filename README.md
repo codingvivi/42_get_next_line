@@ -18,22 +18,24 @@ I decided to once again use musl
 as my implementation reference,
 last time I did I ended up learning a lot.
 
+
 ### Algorithm
+The rough outline of the algorithm is as follows
+![Flow of the program](./reference/docs/program_flow.svg)
+
+### Philosophy
 Since musl usually goes for optimized,
 widely compatible code,
 I tried to mirror their approach
 as much as the norm would allow me.
 
-### Program flow
-![Flow of the program](./reference/docs/program_flow.svg)
-
-#### Optimizations
+## Optimizations
 The afformentioned optimized approach is reflect in:
 
-##### Few memory and copy operations
+### Few memory and copy operations
 Copies and mallocs are kept to a minimum.
 No costly linked lists,
-no temp buffers that I didnt feel liek i absolutely needed.
+no temp buffers that I didnt feel like I absolutely needed.
 If no delimiter is found on read
 the buffer to be returned is grown geometrically
 and then shrunk back down to exact size once before return,
@@ -43,7 +45,7 @@ famously used by Facebook
 in their C++ std::vector implementation,
 this should curb external fragmentation of the freed memory.
 
-##### Optimized read loop
+### Optimized read loop
 The main while loop is an endless one loop,
 checking and breaking is done manually.
 This should be more efficient
@@ -51,7 +53,7 @@ than checking if some semantically meaningful
 but complex break condition is true constantly,
 even during the copying of every byte.
 
-##### Bitwise flags (for fun)
+### Bitwise flags (for fun)
 Bitwise operations are used
 to set flags
 that store operations about the read,
