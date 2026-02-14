@@ -26,7 +26,7 @@ and the source code of either
 
 ## Instructions
 ### Building
-If cloned from my github,
+If cloned from my GitHub,
 this project has premake as an optional dependency,
 which will generate makefiles automatically.
 
@@ -81,7 +81,7 @@ With no arguments supplied,
 running `make` will build library and runner
 in the release_dev configuration.
 
-*note: due to time constraints, I didnt end up using the virtualization the 42 configurations use much, so I won't vouch for them working.*
+*note: due to time constraints, I didn't end up using the virtualization the 42 configurations use much, so I won't vouch for them working.*
 
 ### Algorithm
 The rough outline of the algorithm is as follows
@@ -99,9 +99,9 @@ as much as the norm would allow me.
 The aforementioned optimized approach is reflect in:
 
 ##### Few memory and copy operations
-Copies and mallocs are kept to a minimum.
+Copies and malloc calls are kept to a minimum.
 No costly linked lists,
-no temp buffers that I didnt feel like I absolutely needed.
+no temp buffers that I didn't f'eel like I absolutely needed.
 If no delimiter is found on read
 the buffer to be returned is grown geometrically
 and then shrunk back down to exact size once before return,
@@ -113,16 +113,16 @@ famously used by Facebook
 in their C++ std::vector implementation,
 it should be a good compromise
 between allocating more memory in advance,
-curbing external fragmentation of the freed,
+curbing external fragmentation of the freed
 previous memory
 and being a sane ratio for the computer to work with.
 The notes I took
 working through the proof of this number
 are found [here](./reference/docs/growth_proof.pdf)
-(github [backup](https://github.com/codingvivi/42_get_next_line/blob/main/reference/src/growth_proof.typ))
+(GitHub [backup](https://github.com/codingvivi/42_get_next_line/blob/main/reference/src/growth_proof.typ))
 
 ##### Optimized read loop
-The main while loop is an endless one loop,
+The main while loop is an endless loop,
 checking and breaking is done manually.
 This should be more efficient
 than checking if some semantically meaningful
@@ -179,7 +179,7 @@ to:
 - find some bugs that me and no one else I asked for help caught
 - freshen up my knowledge on infinite series
 - Write a first draft for the readme
-- convert Zoteros bibliography export to markdown while keeping the IEEE formatting
+- convert Zotero's bibliography export to markdown while keeping the IEEE formatting
 
 WolframAlpha's equation solver
 was used to calculate the final quadratic equation
