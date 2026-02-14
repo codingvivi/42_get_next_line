@@ -95,8 +95,7 @@ Since musl usually goes for optimized,
 widely compatible code,
 I tried to mirror their approach
 as much as the norm would allow me.
-
-The aforementioned optimized approach is reflect in:
+This is reflect in:
 
 ##### Few memory and copy operations
 Copies and malloc calls are kept to a minimum.
