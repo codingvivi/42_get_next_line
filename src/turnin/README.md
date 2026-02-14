@@ -128,11 +128,8 @@ With no arguments supplied,
 running `make` will build library and runner
 in the release_dev configuration.
 
-_note: due to time constraints,
-I didnt end up using the virtualization
-the 42 configurations use much,
-so I won't vouch for them working.
-_
+*note: due to time constraints, I didnt end up using the virtualization the 42 configurations use much, so I won't vouch for them working.*
+
 ### Reference documents
 The `reference/` folder
 contains all musl code I annotated for easier understanding
