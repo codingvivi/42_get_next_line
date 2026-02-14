@@ -6,20 +6,11 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/15 19:22:26 by lrain             #+#    #+#             */
-/*   Updated: 2026/02/10 17:51:20 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/14 16:23:57 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
-#include <stddef.h>
-#include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-
-#define READ_ERR -1
-#define READ_NONE_READ 0
-#define READ_EOF READ_NONE_READ
 
 void	ensure_freed(unsigned char **tgt)
 {
