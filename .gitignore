@@ -3,7 +3,7 @@
 bin/
 obj/
 compile_commands.json
-Makefile
+#Makefile
 *.make
 vgcore.*
 *.log

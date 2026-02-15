@@ -39,9 +39,9 @@ project "get_next_line"
 
     -- Update paths to the new subdirectory
     files {
-        "src/turnin/get_next_line.c",
-        "src/turnin/get_next_line_utils.c",
-        "src/turnin/get_next_line.h"
+        "src/get_next_line.c",
+        "src/get_next_line_utils.c",
+        "src/get_next_line.h"
     }
 
     -- so the library itself can find its own header
@@ -54,7 +54,7 @@ project "test_runner"
     files { "tests/main.c" }
 
     -- allows main.c to use #include "get_next_line.h"
-    includedirs { "src/turnin" }
+    includedirs { "src" }
     links { "get_next_line" }
 
 
