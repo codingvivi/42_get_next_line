@@ -2,7 +2,8 @@ _This project has been created as part of the 42 curriculum by lrain_
 
 # Get Next Line
 ![](typing.gif)
-*A C programmer trying to read a single line from a file descriptor*
+
+*A C programmer trying to read 1 (one) line from a file*
 
 ## Description
 This project implements the `get_next_line` function,
@@ -60,10 +61,10 @@ TARGETS:
 ```
 
 - **Configurations**:
-    - `Release`: A standard release build with no debugging information.
-    - `Debug1b`: A debug build that defines `BUFFER_SIZE` as 1. This is useful for testing the `get_next_line` function with a small buffer.
+    - `Release`: A standard release build with no debugging information and one page as the buffer size.
+    - `Debug1b`: A debug build that defines `BUFFER_SIZE` as 1. 
     - `Debug10b`: A debug build that defines `BUFFER_SIZE` as 10.
-    - `Debug1mb`: A debug build that defines `BUFFER_SIZE` as 1,000,000. This is useful for testing with very large lines.
+    - `Debug1mb`: A debug build that defines `BUFFER_SIZE` as 1,000,000.
 
 - **Platforms**:
     - `Dev`: Configured for my machine, which is ARM64 linux.
