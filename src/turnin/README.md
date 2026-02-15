@@ -1,6 +1,8 @@
 _This project has been created as part of the 42 curriculum by lrain_
 
 # Get Next Line
+![](typing.gif)
+
 ## Description
 This project implements the `get_next_line` function,
 which returns a line from a file descriptor,
@@ -159,7 +161,7 @@ when it's optimizing,
 but I did it anyway
 just for the sake of the exercise.
 
-## References
+## Resources
 [1] D. Lemire, "Appending to an std::string character-by-character: how does the capacity grow?," *Daniel Lemire's blog*. Accessed: Feb. 12, 2026. [Online]. Available: https://lemire.me/blog/2023/10/23/appending-to-an-stdstring-character-by-character-how-does-the-capacity-grow/
 
 [2] "Computer data storage," *Wikipedia*. Feb. 12, 2026. Accessed: Feb. 12, 2026. [Online]. Available: https://en.wikipedia.org/w/index.php?title=Computer_data_storage&oldid=1337916484#Primary
