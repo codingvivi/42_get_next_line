@@ -2,6 +2,7 @@ _This project has been created as part of the 42 curriculum by lrain_
 
 # Get Next Line
 ![](typing.gif)
+*A C programmer trying to read a single line from a file descriptor*
 
 ## Description
 This project implements the `get_next_line` function,
