@@ -3,10 +3,13 @@
 bin/
 obj/
 compile_commands.json
-#Makefile
+Makefile
 *.make
 vgcore.*
 *.log
 
 # just my reference
 external/reference
+
+!turnin/Makefile
+!turnin/*.make

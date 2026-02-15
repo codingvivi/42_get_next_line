@@ -3,4 +3,6 @@ src/*.c
 src/**.c
 src/*.h
 src/**.h
+Makefile
+*.make
 README.md
