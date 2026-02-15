@@ -20,13 +20,6 @@ I decided to once again use musl
 as my implementation reference,
 last time I did I ended up learning a lot.
 
-### Reference documents
-The `reference/` folder
-contains all musl code I annotated for easier understanding
-plus my math notes,
-the flowchart,
-and the source code of either
-
 ## Instructions
 ### Building
 If cloned from my GitHub,
