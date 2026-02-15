@@ -1,9 +1,10 @@
-src/
-src/*.c
-src/**.c
-src/*.h
-src/**.h
-tests/
-Makefile
-*.make
-README.md
++ src/
++ src/*.c
++ src/**.c
++ src/*.h
++ src/**.h
++ tests/
++ tests/**
++ Makefile
++ *.make
++ README.md
