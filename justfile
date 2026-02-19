@@ -14,3 +14,17 @@ build-make:
     premake5 gmake
     @printf "\n"
     premake5 ecc
+
+fclean:
+    rm -rfv obj/
+    rm -rfv bin/
+    rm -rfv dist/
+    rm -fv Makefile
+    rm -fv *.make
+    rm -fv compile_commands.json
+
+re:
+    just fclean
+    just build-make
+    make
+    just build-dist

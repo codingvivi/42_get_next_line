@@ -90,10 +90,14 @@ which can be run with `just recipename`
 Available recipes:
     build-dist
     build-make
+    fclean
+    re
     release
 ```
 - **`build-make`** — Generates build files using Premake. Runs `premake5 gmake` to produce the Makefile, then `premake5 ecc` to generate the compile flags record for linting.
 - **`build-dist`** — Copies source files, headers, tests, and the Makefile into `dist/` using rsync, then symlinks `dist/README.md` to `dist/src/README.md`, so the resulting src folder is conform to be turned in (needed if you're me).
+- **`fclean`** — Removes all build artifacts: `obj/`, `bin/`, `dist/`, the generated Makefile, `.make` files, and `compile_commands.json`.
+- **`re`** — Full rebuild: runs `fclean`, regenerates build files with `build-make`, compiles with `make`, then rebuilds the dist with `build-dist`.
 - **`release`** — Runs `build-dist` then creates a GitHub release via the `gh` CLI.
 
 ### Running tests
