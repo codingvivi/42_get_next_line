@@ -113,16 +113,16 @@ Since musl usually goes for optimized,
 widely compatible code,
 I tried to mirror their approach
 as much as the norm would allow me.
-This is reflect in:
+This is reflected in:
 
 #### Few memory and copy operations
 Copies and malloc calls are kept to a minimum.
 No costly linked lists,
-no temp buffers that I didn't f'eel like I absolutely needed.
+no temp buffers that I didn't feel like I absolutely needed.
 If no delimiter is found on read
 the buffer to be returned is grown geometrically
 and then shrunk back down to exact size once before return,
-this should help with long lines smaller READBUFFER sizes.
+this should help with long lines and smaller READBUFFER sizes.
 
 #### 1.5 growth factor
 The growth-factor for the read buffer is set to 1.5,
@@ -137,14 +137,6 @@ The notes I took
 working through the proof of this number
 are found [here](./reference/docs/growth_proof.pdf)
 (GitHub [backup](https://github.com/codingvivi/42_get_next_line/blob/main/reference/src/growth_proof.typ))
-
-#### Optimized read loop
-The main while loop is an endless loop,
-checking and breaking is done manually.
-This should be more efficient
-than checking if some semantically meaningful
-but complex break condition is true constantly,
-even during the copying of every byte.
 
 #### Bitwise flags (for fun)
 Bitwise operations are used

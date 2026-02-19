@@ -28,7 +28,7 @@ This will always be smaller
 than the new memory needed:
 
 $
-  2^n + 1 < 2^n 
+  2^n - 1 < 2^n 
 $
 
 == Optimal growth factor
@@ -73,7 +73,7 @@ $
 
 Thus
 $
-  lim_(n arrow infinity)& [ x^(n-1) / (x^n (x - 1)) - 1 / (x^n / (x - 1)) ] >= 1 \
+  lim_(n arrow infinity)& [ x^(n-1) / (x^n (x - 1)) - 1 / (x^n (x - 1)) ] >= 1 \
   lim_(n arrow infinity)& [ 1 / ( x (x - 1)) - 1 / (x^n (x - 1)) ] >= 1
 $
 
@@ -92,7 +92,7 @@ $
   0 &>= x^2 - x - 1 \
 $
 
-Solvng this quadratic equation yields:
+Solving this quadratic equation yields:
 
 $
   x_1 &= (1 + sqrt(5)) / 2 approx 1.618 \

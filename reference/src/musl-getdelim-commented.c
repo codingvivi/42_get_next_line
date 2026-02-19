@@ -6,7 +6,7 @@
 /*   By: lrain <lrain@students.42berlin.de>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 18:28:37 by lrain             #+#    #+#             */
-/*   Updated: 2026/01/20 22:09:12 by lrain            ###   ########.fr       */
+/*   Updated: 2026/02/19 22:31:19 by lrain            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@ ssize_t getdelim(char **restrict strt_out, size_t *restrict capout, int delim,
     *capout = 0;
 
   // endlessly
-  // doesnt check conditionn every single byte
   for (;;) {
     // if we're not at end of file yet
     if (f->rpos != f->rend) {
@@ -136,3 +135,4 @@ ssize_t getdelim(char **restrict strt_out, size_t *restrict capout, int delim,
 }
 
 weak_alias(getdelim, __getdelim);
+
