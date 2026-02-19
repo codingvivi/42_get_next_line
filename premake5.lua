@@ -8,6 +8,7 @@ workspace "GNL_Workspace"
     --defines {  "BUFFER_SIZE=1" }
 
     buildoptions {"-Wall", "-Werror", "-Wextra"}
+    linkoptions {"-fPIE"}
 
     filter "platforms:Dev"
         architecture "ARM64"

@@ -22,10 +22,14 @@ as my implementation reference,
 last time I did I ended up learning a lot.
 
 ## Instructions
-### Building
-If cloned from my GitHub,
-this project has premake as an optional dependency,
-which will generate makefiles automatically.
+### Get 
+To get the source code
+to test it out,
+download one of the releases.
+### Build
+This project uses:
+    - [Premake](https://premake.github.io/) to generate new buildfiles
+    - [just](https://github.com/casey/just) and [rsync](https://rsync.samba.org/) (if the latter one isn't preinstalled on your machine)
 
 Once installed,
 run
@@ -36,7 +40,7 @@ run
     premake5 gmake # to generate make file
     premake5 ecc #to generate record of compile flags for linting
 ```
-
+#### Make
 Once generated with premake,
 the compile options are:
 ```
@@ -59,7 +63,6 @@ TARGETS:
    get_next_line
    test_runner
 ```
-
 - **Configurations**:
     - `Release`: A standard release build with no debugging information and one page as the buffer size.
     - `Debug1b`: A debug build that defines `BUFFER_SIZE` as 1. 
@@ -79,6 +82,19 @@ running `make` will build library and runner
 in the release_dev configuration.
 
 *note: due to time constraints, I didn't end up using the virtualization the 42 configurations use much, so I won't vouch for them working.*
+#### Release building (and other `just` commands)
+Just provides the following recipes
+which can be run with `just recipename`
+```
+> just -l
+Available recipes:
+    build-dist
+    build-make
+    release
+```
+- **`build-make`** — Generates build files using Premake. Runs `premake5 gmake` to produce the Makefile, then `premake5 ecc` to generate the compile flags record for linting.
+- **`build-dist`** — Copies source files, headers, tests, and the Makefile into `dist/` using rsync, then symlinks `dist/README.md` to `dist/src/README.md`, so the resulting src folder is conform to be turned in (needed if you're me).
+- **`release`** — Runs `build-dist` then creates a GitHub release via the `gh` CLI.
 
 ### Running tests
 After building,
