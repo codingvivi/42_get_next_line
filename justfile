@@ -1,7 +1,8 @@
-release:
+build-release:
+    rm -rfv dist/
     just build-dist
     @printf "\n"
-    gh release create --fail-on-no-commits
+    tar -czf lrain-get_next_line.tar.gz -C dist/ . 
 
 build-dist:
     @printf "Copying files to dist/"

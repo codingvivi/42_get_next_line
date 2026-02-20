@@ -8,6 +8,8 @@ Makefile
 *.make
 vgcore.*
 *.log
+*.tar.*
+*.zip
 
 # just my reference
 external/reference
