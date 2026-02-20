@@ -28,8 +28,8 @@ to test it out,
 download one of the releases.
 ### Build
 This project uses:
-    - [Premake](https://premake.github.io/) to generate new buildfiles
-    - [just](https://github.com/casey/just) and [rsync](https://rsync.samba.org/) (if the latter one isn't preinstalled on your machine)
+- [Premake](https://premake.github.io/) to generate new buildfiles
+- [just](https://github.com/casey/just) and [rsync](https://rsync.samba.org/) (if the latter one isn't preinstalled on your machine)
 
 Once installed,
 run
